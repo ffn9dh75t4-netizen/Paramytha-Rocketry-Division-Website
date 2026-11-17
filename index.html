@@ -14,32 +14,28 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html {
             width: 100%;
             min-height: 100%;
         }
 
         body {
-            min-height: 100vh;
-            min-height: 100dvh;
+            width: 100%;
+            min-height: 200vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+
             background-image: url("photo.jpg.png");
-            background-size: cover;
-            background-position: center;
+            background-size: 100% 100vh;
+            background-position: top center;
             background-repeat: no-repeat;
+
             font-family: Arial, sans-serif;
         }
 
-        /* PC screens */
-        @media (min-width: 1024px) {
+        @media (max-width: 768px) {
             body {
-                background-position: center;
-            }
-        }
-
-        /* iPad and tablet screens */
-        @media (max-width: 1023px) {
-            body {
-                background-position: center;
+                background-size: 100% 100vh;
             }
         }
     </style>
