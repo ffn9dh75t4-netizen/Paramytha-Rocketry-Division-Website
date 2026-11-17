@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>My Website</title>
 
     <style>
@@ -13,13 +14,33 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            min-height: 100%;
+        }
+
         body {
-            min-height: 200vh;
+            min-height: 100vh;
+            min-height: 100dvh;
             background-image: url("photo.jpg.png");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             font-family: Arial, sans-serif;
+        }
+
+        /* PC screens */
+        @media (min-width: 1024px) {
+            body {
+                background-position: center;
+            }
+        }
+
+        /* iPad and tablet screens */
+        @media (max-width: 1023px) {
+            body {
+                background-position: center;
+            }
         }
     </style>
 </head>
