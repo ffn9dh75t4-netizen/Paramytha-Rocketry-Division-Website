@@ -51,44 +51,31 @@ html, body {
     display: block;
 }
 
-/* NEW BUTTON DESIGN */
+/* SIMPLE ORIGINAL-STYLE BUTTONS */
 
 .navigation {
     position: absolute;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 61.7%;
+    left: 4.5%;
     display: flex;
-    justify-content: center;
+    gap: 3px;
     align-items: center;
-    gap: 14px;
-    width: 95%;
-    flex-wrap: wrap;
 }
 
 .nav-button {
-    border: 2px solid #ff8c00;
-    background: #ff8c00;
-    color: white;
-    padding: 14px 25px;
-    min-width: 125px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: bold;
-    letter-spacing: 1px;
+    background: white;
+    color: black;
+    border: 2px solid #ff9900;
+    border-radius: 0;
+    padding: 4px 6px;
+    font-size: 16px;
+    font-weight: normal;
     cursor: pointer;
-    transition: 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
 
 .nav-button:hover {
-    background: white;
-    color: #ff8c00;
-    transform: translateY(-3px);
-}
-
-.nav-button:active {
-    transform: scale(0.96);
+    background: #ff9900;
+    color: white;
 }
 
 /* OTHER PAGES */
@@ -101,40 +88,30 @@ html, body {
 }
 
 h1 {
-    color: #ff8c00;
+    color: #ff9900;
     font-size: 38px;
 }
 
 .back {
     margin-top: 30px;
-    padding: 13px 25px;
-    background: #ff8c00;
-    color: white;
-    border: none;
-    border-radius: 7px;
-    font-weight: bold;
+    padding: 8px 12px;
+    background: white;
+    color: black;
+    border: 2px solid #ff9900;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .back:hover {
-    background: #e87900;
+    background: #ff9900;
+    color: white;
 }
 
 @media (max-width: 600px) {
-    .navigation {
-        gap: 8px;
-        bottom: 18px;
-    }
-
     .nav-button {
-        min-width: 0;
-        padding: 12px 15px;
-        font-size: 12px;
-    }
-
-    .content {
-        padding: 35px 20px;
+        font-size: 14px;
+        padding: 4px 5px;
     }
 }
 </style>
@@ -142,83 +119,57 @@ h1 {
 
 <body>
 
-<!-- HOME -->
+<!-- HOME PAGE -->
 <div id="home" class="page">
     <div class="image-container">
         <img src="photo.jpg.png" alt="Paramytha Rocketry Division">
     </div>
 
     <nav class="navigation">
-        <button class="nav-button" onclick="showPage('donate')">
-            DONATE
-        </button>
-
-        <button class="nav-button" onclick="showPage('about')">
-            ABOUT US
-        </button>
-
-        <button class="nav-button" onclick="showPage('album')">
-            OUR ALBUM
-        </button>
+        <button class="nav-button" onclick="showPage('donate')">Donate</button>
+        <button class="nav-button" onclick="showPage('about')">About</button>
+        <button class="nav-button" onclick="showPage('album')">Album</button>
     </nav>
 </div>
 
-<!-- DONATE -->
+<!-- DONATE PAGE -->
 <div id="donate" class="page">
     <div class="content">
         <h1>Donate</h1>
         <h2>Support Paramytha Rocketry Division</h2>
-        <p>
-            Help us support our interest in aerospace engineering
-            and rocketry.
-        </p>
+        <p>Help us support our interest in aerospace engineering and rocketry.</p>
         <p>Donation information coming soon.</p>
-
-        <button class="back" onclick="showPage('home')">
-            BACK TO HOME
-        </button>
+        <button class="back" onclick="showPage('home')">Back to Home</button>
     </div>
 </div>
 
-<!-- ABOUT -->
+<!-- ABOUT PAGE -->
 <div id="about" class="page">
     <div class="content">
         <h1>About Us</h1>
         <h2>Paramytha Rocketry Division</h2>
-
         <p>
             Paramytha Rocketry Division is a rocketry organisation
             driven by curiosity, innovation and a passion for
             aerospace engineering.
         </p>
-
         <p>
             Our goal is to explore the world of rocketry through
             designing, developing and testing rocket projects.
             We believe in learning through experimentation,
             creativity and teamwork.
         </p>
-
-        <button class="back" onclick="showPage('home')">
-            BACK TO HOME
-        </button>
+        <button class="back" onclick="showPage('home')">Back to Home</button>
     </div>
 </div>
 
-<!-- ALBUM -->
+<!-- ALBUM PAGE -->
 <div id="album" class="page">
     <div class="content">
         <h1>Our Album</h1>
         <h2>Paramytha Rocketry Division</h2>
-
-        <p>
-            Photos of our rockets, projects and activities
-            will appear here.
-        </p>
-
-        <button class="back" onclick="showPage('home')">
-            BACK TO HOME
-        </button>
+        <p>Photos of our rockets, projects and activities will appear here.</p>
+        <button class="back" onclick="showPage('home')">Back to Home</button>
     </div>
 </div>
 
@@ -229,7 +180,6 @@ function showPage(pageName) {
     });
 
     document.getElementById(pageName).style.display = 'block';
-
     window.scrollTo(0, 0);
 }
 </script>
