@@ -11,11 +11,12 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
     margin: 0;
+    width: 100%;
+    min-height: 100%;
     font-family: Arial, sans-serif;
     background: white;
-    color: black;
 }
 
 .page {
@@ -26,74 +27,114 @@ body {
 #home {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding: 10px 0;
+    align-items: center;
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
 }
 
 .image-container {
     position: relative;
-    width: min(80vw, 56.9vh);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .image-container img {
-    width: 100%;
-    height: auto;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
     display: block;
 }
 
-.image-container button {
+/* NEW BUTTON DESIGN */
+
+.navigation {
     position: absolute;
-    background: transparent;
-    border: none;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    width: 95%;
+    flex-wrap: wrap;
+}
+
+.nav-button {
+    border: 2px solid #ff8c00;
+    background: #ff8c00;
+    color: white;
+    padding: 14px 25px;
+    min-width: 125px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
     cursor: pointer;
-    padding: 0;
+    transition: 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
 
-.donate {
-    left: 4.5%;
-    top: 61.7%;
-    width: 6.4%;
-    height: 2.2%;
+.nav-button:hover {
+    background: white;
+    color: #ff8c00;
+    transform: translateY(-3px);
 }
 
-.about {
-    left: 11%;
-    top: 61.7%;
-    width: 7.1%;
-    height: 2.2%;
+.nav-button:active {
+    transform: scale(0.96);
 }
 
-.album {
-    left: 18.1%;
-    top: 61.7%;
-    width: 7.6%;
-    height: 2.2%;
-}
+/* OTHER PAGES */
 
 .content {
     max-width: 900px;
-    margin: 0 auto;
+    margin: auto;
     padding: 60px 25px;
+    line-height: 1.7;
 }
 
 h1 {
-    color: #ff9900;
+    color: #ff8c00;
+    font-size: 38px;
 }
 
 .back {
-    display: inline-block;
     margin-top: 30px;
-    padding: 12px 24px;
-    background: #ff9900;
+    padding: 13px 25px;
+    background: #ff8c00;
     color: white;
     border: none;
+    border-radius: 7px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
 }
 
-@media (max-width: 768px) {
-    .image-container {
-        width: 90vw;
+.back:hover {
+    background: #e87900;
+}
+
+@media (max-width: 600px) {
+    .navigation {
+        gap: 8px;
+        bottom: 18px;
+    }
+
+    .nav-button {
+        min-width: 0;
+        padding: 12px 15px;
+        font-size: 12px;
+    }
+
+    .content {
+        padding: 35px 20px;
     }
 }
 </style>
@@ -101,25 +142,28 @@ h1 {
 
 <body>
 
-<!-- HOME PAGE -->
+<!-- HOME -->
 <div id="home" class="page">
     <div class="image-container">
-
         <img src="photo.jpg.png" alt="Paramytha Rocketry Division">
-
-        <button class="donate" onclick="showPage('donate')"
-        aria-label="Donate"></button>
-
-        <button class="about" onclick="showPage('about')"
-        aria-label="About"></button>
-
-        <button class="album" onclick="showPage('album')"
-        aria-label="Album"></button>
-
     </div>
+
+    <nav class="navigation">
+        <button class="nav-button" onclick="showPage('donate')">
+            DONATE
+        </button>
+
+        <button class="nav-button" onclick="showPage('about')">
+            ABOUT US
+        </button>
+
+        <button class="nav-button" onclick="showPage('album')">
+            OUR ALBUM
+        </button>
+    </nav>
 </div>
 
-<!-- DONATE PAGE -->
+<!-- DONATE -->
 <div id="donate" class="page">
     <div class="content">
         <h1>Donate</h1>
@@ -131,12 +175,12 @@ h1 {
         <p>Donation information coming soon.</p>
 
         <button class="back" onclick="showPage('home')">
-            Back to Home
+            BACK TO HOME
         </button>
     </div>
 </div>
 
-<!-- ABOUT PAGE -->
+<!-- ABOUT -->
 <div id="about" class="page">
     <div class="content">
         <h1>About Us</h1>
@@ -156,12 +200,12 @@ h1 {
         </p>
 
         <button class="back" onclick="showPage('home')">
-            Back to Home
+            BACK TO HOME
         </button>
     </div>
 </div>
 
-<!-- ALBUM PAGE -->
+<!-- ALBUM -->
 <div id="album" class="page">
     <div class="content">
         <h1>Our Album</h1>
@@ -173,7 +217,7 @@ h1 {
         </p>
 
         <button class="back" onclick="showPage('home')">
-            Back to Home
+            BACK TO HOME
         </button>
     </div>
 </div>
@@ -184,7 +228,7 @@ function showPage(pageName) {
         page.style.display = 'none';
     });
 
-    document.getElementById(pageName).style.display = 'flex';
+    document.getElementById(pageName).style.display = 'block';
 
     window.scrollTo(0, 0);
 }
