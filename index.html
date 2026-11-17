@@ -2,50 +2,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paramytha Rocketry Division</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        body {
-            width: 100%;
-            min-height: 100vh;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: white;
+    color: black;
+}
 
-        .background-photo {
-            display: block;
-            width: auto;
-            height: auto;
-            max-width: 80vw;
-            max-height: 80vh;
-            object-fit: contain;
-        }
+.page {
+    display: none;
+    min-height: 100vh;
+}
 
-        @media (max-width: 768px) {
-            .background-photo {
-                max-width: 90vw;
-                max-height: 85vh;
-            }
-        }
-    </style>
+#home {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px 0;
+}
+
+.image-container {
+    position: relative;
+    width: min(80vw, 56.9vh);
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.image-container button {
+    position: absolute;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.donate {
+    left: 4.5%;
+    top: 61.7%;
+    width: 6.4%;
+    height: 2.2%;
+}
+
+.about {
+    left: 11%;
+    top: 61.7%;
+    width: 7.1%;
+    height: 2.2%;
+}
+
+.album {
+    left: 18.1%;
+    top: 61.7%;
+    width: 7.6%;
+    height: 2.2%;
+}
+
+.content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 25px;
+}
+
+h1 {
+    color: #ff9900;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 24px;
+    background: #ff9900;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .image-container {
+        width: 90vw;
+    }
+}
+</style>
 </head>
 
 <body>
-    <img
-        src="photo.jpg.png"
-        alt="Website photo"
-        class="background-photo"
-    >
+
+<!-- HOME PAGE -->
+<div id="home" class="page">
+    <div class="image-container">
+
+        <img src="photo.jpg.png" alt="Paramytha Rocketry Division">
+
+        <button class="donate" onclick="showPage('donate')"
+        aria-label="Donate"></button>
+
+        <button class="about" onclick="showPage('about')"
+        aria-label="About"></button>
+
+        <button class="album" onclick="showPage('album')"
+        aria-label="Album"></button>
+
+    </div>
+</div>
+
+<!-- DONATE PAGE -->
+<div id="donate" class="page">
+    <div class="content">
+        <h1>Donate</h1>
+        <h2>Support Paramytha Rocketry Division</h2>
+        <p>
+            Help us support our interest in aerospace engineering
+            and rocketry.
+        </p>
+        <p>Donation information coming soon.</p>
+
+        <button class="back" onclick="showPage('home')">
+            Back to Home
+        </button>
+    </div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div id="about" class="page">
+    <div class="content">
+        <h1>About Us</h1>
+        <h2>Paramytha Rocketry Division</h2>
+
+        <p>
+            Paramytha Rocketry Division is a rocketry organisation
+            driven by curiosity, innovation and a passion for
+            aerospace engineering.
+        </p>
+
+        <p>
+            Our goal is to explore the world of rocketry through
+            designing, developing and testing rocket projects.
+            We believe in learning through experimentation,
+            creativity and teamwork.
+        </p>
+
+        <button class="back" onclick="showPage('home')">
+            Back to Home
+        </button>
+    </div>
+</div>
+
+<!-- ALBUM PAGE -->
+<div id="album" class="page">
+    <div class="content">
+        <h1>Our Album</h1>
+        <h2>Paramytha Rocketry Division</h2>
+
+        <p>
+            Photos of our rockets, projects and activities
+            will appear here.
+        </p>
+
+        <button class="back" onclick="showPage('home')">
+            Back to Home
+        </button>
+    </div>
+</div>
+
+<script>
+function showPage(pageName) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+    });
+
+    document.getElementById(pageName).style.display = 'flex';
+
+    window.scrollTo(0, 0);
+}
+</script>
+
 </body>
 </html>
