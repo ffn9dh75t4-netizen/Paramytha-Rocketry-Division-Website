@@ -603,6 +603,7 @@ return blockedWords.some(word => lower.includes(word));
 
 
 /* CREATE A POST DISPLAY */
+/* UPDATED: ORANGE USERNAMES NOW OPEN MEMBER PROFILES */
 
 function makePostElement(post) {
 
@@ -612,20 +613,57 @@ article.className = 'forum-post';
 const header = document.createElement('div');
 
 const userButton = document.createElement('button');
+
+userButton.type = 'button';
 userButton.className = 'profile-link';
 userButton.textContent = post.username || 'Member';
 
-if (post.user_id) {
-
-userButton.addEventListener('click', () => {
-viewProfile(post.user_id);
-});
-
-} else {
+userButton.addEventListener('click', async () => {
 
 userButton.disabled = true;
 
+try {
+
+let userId = post.user_id;
+
+/* LOOK UP THE PROFILE IF THE POST HAS NO USER ID */
+
+if (!userId && post.username) {
+
+const { data: profile, error } = await supabase
+.from('profiles')
+.select('id')
+.eq('username', post.username)
+.maybeSingle();
+
+if (error) throw error;
+
+userId = profile?.id;
+
 }
+
+if (!userId) {
+
+alert('This post is not linked to a member profile.');
+return;
+
+}
+
+await window.viewProfile(userId);
+
+} catch (error) {
+
+console.error('Profile opening error:', error);
+
+alert('Could not open profile: ' + error.message);
+
+} finally {
+
+userButton.disabled = false;
+
+}
+
+});
 
 const date = document.createElement('span');
 date.className = 'post-date';
