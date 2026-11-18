@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Paramytha Rocketry Division</title>
 
 <style>
@@ -11,13 +12,11 @@
     box-sizing: border-box;
 }
 
-html, body {
+body {
     margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
     font-family: Arial, sans-serif;
     background: white;
+    color: #171717;
 }
 
 .page {
@@ -29,28 +28,23 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    height: 100svh;
-    overflow: hidden;
-    position: relative;
+    min-height: 100vh;
 }
 
 .image-container {
     position: relative;
-    height: 100%;
+    height: 100vh;
     width: auto;
     max-width: 100vw;
 }
 
 .image-container img {
-    display: block;
     height: 100%;
     width: auto;
     max-width: 100vw;
+    display: block;
     object-fit: contain;
 }
-
-/* BUTTONS POSITIONED ON THE IMAGE */
 
 .navigation {
     position: absolute;
@@ -58,134 +52,635 @@ html, body {
     left: 4.5%;
     display: flex;
     gap: 3px;
-    align-items: center;
-    white-space: nowrap;
+    flex-wrap: wrap;
+    max-width: 91%;
 }
 
-.nav-button {
+.nav-button,
+.back,
+.action-button {
     background: white;
     color: black;
     border: 2px solid #ff9900;
-    border-radius: 0;
-    padding: 3px 5px;
-    font-size: clamp(10px, 1.6vw, 16px);
-    font-weight: normal;
+    padding: 5px 8px;
+    font-size: 14px;
     cursor: pointer;
 }
 
-.nav-button:hover {
+.nav-button {
+    padding: 3px 5px;
+    font-size: clamp(10px, 1.6vw, 16px);
+}
+
+.nav-button:hover,
+.back:hover,
+.action-button:hover {
     background: #ff9900;
     color: white;
 }
 
-/* OTHER PAGES */
-
 .content {
-    max-width: 900px;
+    width: min(900px, 100%);
     margin: auto;
-    padding: 50px 25px;
-    line-height: 1.7;
+    padding: 35px 22px;
+    line-height: 1.6;
 }
 
 h1 {
     color: #ff9900;
 }
 
-.back {
-    margin-top: 25px;
-    padding: 6px 10px;
-    background: white;
-    color: black;
-    border: 2px solid #ff9900;
-    border-radius: 0;
-    cursor: pointer;
+.panel {
+    border: 1px solid #ddd;
+    padding: 18px;
+    margin: 18px 0;
 }
 
-.back:hover {
-    background: #ff9900;
-    color: white;
+.field {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    margin: 8px 0 16px;
+    border: 1px solid #bbb;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+textarea.field {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.post {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 12px 0;
+    overflow-wrap: anywhere;
+}
+
+.post-head {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.post-user {
+    font-weight: bold;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #777;
+}
+
+.post-content {
+    white-space: pre-wrap;
+    margin-top: 10px;
+}
+
+.status {
+    font-size: 14px;
+    min-height: 22px;
+}
+
+.error {
+    color: #b42318;
+}
+
+.success {
+    color: #16803d;
+}
+
+.small {
+    font-size: 13px;
+    color: #666;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+    .content {
+        padding: 25px 15px;
+    }
+
+    .navigation {
+        left: 3%;
+        max-width: 94%;
+        gap: 2px;
+    }
+
+    .nav-button {
+        font-size: 10px;
+        padding: 3px 4px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- HOME -->
+<!-- HOMEPAGE -->
+
 <div id="home" class="page">
+
     <div class="image-container">
 
-        <img src="photo.jpg.png" alt="Paramytha Rocketry Division">
+        <!-- Your existing logo/image -->
+        <img src="photo.jpg.png"
+             alt="Paramytha Rocketry Division">
 
         <nav class="navigation">
-            <button class="nav-button" onclick="showPage('donate')">Donate</button>
-            <button class="nav-button" onclick="showPage('about')">About</button>
-            <button class="nav-button" onclick="showPage('album')">Album</button>
+
+            <button class="nav-button"
+                onclick="showPage('donate')">
+                Donate
+            </button>
+
+            <button class="nav-button"
+                onclick="showPage('about')">
+                About
+            </button>
+
+            <button class="nav-button"
+                onclick="showPage('album')">
+                Album
+            </button>
+
+            <button class="nav-button"
+                onclick="showPage('forum')">
+                Forum
+            </button>
+
+            <button class="nav-button"
+                onclick="showPage('report')">
+                Report a Find
+            </button>
+
         </nav>
 
     </div>
+
 </div>
+
 
 <!-- DONATE -->
+
 <div id="donate" class="page">
-    <div class="content">
+
+    <main class="content">
+
         <h1>Donate</h1>
+
         <h2>Support Paramytha Rocketry Division</h2>
-        <p>Help us support our interest in aerospace engineering and rocketry.</p>
-        <p>Donation information coming soon.</p>
-        <button class="back" onclick="showPage('home')">Back to Home</button>
-    </div>
+
+        <p>
+            Help us support our interest in aerospace
+            engineering and rocketry.
+        </p>
+
+        <button class="back"
+            onclick="showPage('home')">
+            Back to Home
+        </button>
+
+    </main>
+
 </div>
+
 
 <!-- ABOUT -->
+
 <div id="about" class="page">
-    <div class="content">
+
+    <main class="content">
+
         <h1>About Us</h1>
+
         <h2>Paramytha Rocketry Division</h2>
+
         <p>
-            Paramytha Rocketry Division is a rocketry organisation
-            driven by curiosity, innovation and a passion for
-            aerospace engineering.
+            Paramytha Rocketry Division is dedicated
+            to exploring aerospace engineering and
+            the science of rocketry.
         </p>
+
         <p>
-            Our goal is to explore the world of rocketry through
-            designing, developing and testing rocket projects.
-            We believe in learning through experimentation,
-            creativity and teamwork.
+            We focus on learning, experimentation,
+            creativity and developing our knowledge
+            of rocket technology.
         </p>
-        <button class="back" onclick="showPage('home')">Back to Home</button>
-    </div>
+
+        <button class="back"
+            onclick="showPage('home')">
+            Back to Home
+        </button>
+
+    </main>
+
 </div>
+
 
 <!-- ALBUM -->
+
 <div id="album" class="page">
-    <div class="content">
-        <h1>Our Album</h1>
-        <h2>Paramytha Rocketry Division</h2>
-        <p>Photos of our rockets, projects and activities will appear here.</p>
-        <button class="back" onclick="showPage('home')">Back to Home</button>
-    </div>
+
+    <main class="content">
+
+        <h1>Album</h1>
+
+        <p>
+            Photos of our projects, rockets and
+            activities will appear here.
+        </p>
+
+        <button class="back"
+            onclick="showPage('home')">
+            Back to Home
+        </button>
+
+    </main>
+
 </div>
 
+
+<!-- FORUM -->
+
+<div id="forum" class="page">
+
+    <main class="content">
+
+        <h1>Forum</h1>
+
+        <p>
+            Welcome to the Paramytha Rocketry
+            global community forum.
+        </p>
+
+        <div class="panel">
+
+            <button class="action-button"
+                onclick="showPage('report')">
+                Report a Find
+            </button>
+
+            <button class="action-button"
+                onclick="loadPosts()">
+                Refresh
+            </button>
+
+            <p id="forum-status" class="status">
+                Loading posts...
+            </p>
+
+            <div id="posts-list"></div>
+
+        </div>
+
+        <button class="back"
+            onclick="showPage('home')">
+            Back to Home
+        </button>
+
+    </main>
+
+</div>
+
+
+<!-- REPORT A FIND -->
+
+<div id="report" class="page">
+
+    <main class="content">
+
+        <h1>Report a Find</h1>
+
+        <p>
+            Found something interesting?
+            Share it with the Paramytha Rocketry
+            community!
+        </p>
+
+        <form id="report-form" class="panel">
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                id="username"
+                class="field"
+                type="text"
+                maxlength="30"
+                placeholder="Enter your username"
+                required
+            >
+
+            <label for="find-content">
+                Describe your find
+            </label>
+
+            <textarea
+                id="find-content"
+                class="field"
+                maxlength="2000"
+                placeholder="Describe what you found..."
+                required
+            ></textarea>
+
+            <button
+                id="submit-find"
+                class="action-button"
+                type="submit"
+            >
+                Submit Find
+            </button>
+
+            <p id="report-status" class="status"></p>
+
+            <p class="small">
+                Your submission will be public and visible
+                to other visitors.
+            </p>
+
+        </form>
+
+        <button class="back"
+            onclick="showPage('forum')">
+            Back to Forum
+        </button>
+
+        <button class="back"
+            onclick="showPage('home')">
+            Back to Home
+        </button>
+
+    </main>
+
+</div>
+
+
+<!-- PAGE NAVIGATION -->
+
 <script>
+
 function showPage(pageName) {
+
     document.querySelectorAll('.page').forEach(page => {
         page.style.display = 'none';
     });
 
-    document.getElementById(pageName).style.display = 'flex';
+    const selectedPage = document.getElementById(pageName);
+
+    if (selectedPage) {
+        selectedPage.style.display = 'flex';
+    }
+
     window.scrollTo(0, 0);
+
+    if (pageName === 'forum') {
+        loadPosts();
+    }
+
 }
+
 </script>
 
+
+<!-- SUPABASE CONNECTION AND FORUM -->
+
 <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  const supabase = createClient(
-    'https://alnskbaksifcrgluqdio.supabase.co',
-    'sb_publishable_okNP6e1gRixHPB709F5cHA_4TdsBdEs'
-  );
+import { createClient }
+from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  console.log('Supabase connected!');
+
+// ===================================
+// SUPABASE SETTINGS
+// ===================================
+
+// PUT YOUR OWN DETAILS HERE
+
+const SUPABASE_URL = 'https://alnskbaksifcrgluqdio.supabase.co';
+
+const SUPABASE_KEY = 'sb_publishable_okNP6e1gRixHPB709F5cHA_4TdsBdEs';
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// ===================================
+// ELEMENTS
+// ===================================
+
+const postsList =
+    document.getElementById('posts-list');
+
+const forumStatus =
+    document.getElementById('forum-status');
+
+const reportStatus =
+    document.getElementById('report-status');
+
+const reportForm =
+    document.getElementById('report-form');
+
+const submitButton =
+    document.getElementById('submit-find');
+
+
+// ===================================
+// STATUS MESSAGES
+// ===================================
+
+function setStatus(element, message, type = '') {
+
+    element.textContent = message;
+
+    element.className =
+        'status ' + type;
+
+}
+
+
+// ===================================
+// LOAD FORUM POSTS
+// ===================================
+
+window.loadPosts = async function() {
+
+    setStatus(forumStatus, 'Loading posts...');
+
+    const { data, error } = await supabase
+        .from('forum_posts')
+        .select('id, username, content, created_at')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+    if (error) {
+
+        setStatus(
+            forumStatus,
+            'Could not load posts: ' + error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    postsList.replaceChildren();
+
+    if (!data || data.length === 0) {
+
+        setStatus(
+            forumStatus,
+            'No finds yet. Be the first to post!'
+        );
+
+        return;
+    }
+
+    data.forEach(post => {
+
+        const article = document.createElement('article');
+
+        article.className = 'post';
+
+        const header = document.createElement('div');
+        header.className = 'post-head';
+
+        const username = document.createElement('span');
+        username.className = 'post-user';
+        username.textContent = post.username;
+
+        const date = document.createElement('time');
+        date.className = 'post-date';
+
+        const parsedDate = new Date(post.created_at);
+
+        date.textContent = Number.isNaN(parsedDate.getTime())
+            ? ''
+            : parsedDate.toLocaleString();
+
+        header.appendChild(username);
+        header.appendChild(date);
+
+        const content = document.createElement('p');
+        content.className = 'post-content';
+        content.textContent = post.content;
+
+        article.appendChild(header);
+        article.appendChild(content);
+
+        postsList.appendChild(article);
+
+    });
+
+    setStatus(
+        forumStatus,
+        data.length + ' recent find(s).'
+    );
+
+};
+
+
+// ===================================
+// SUBMIT A FIND
+// ===================================
+
+reportForm.addEventListener('submit', async function(event) {
+
+    event.preventDefault();
+
+    const username =
+        document.getElementById('username')
+        .value.trim();
+
+    const content =
+        document.getElementById('find-content')
+        .value.trim();
+
+
+    if (!username || !content) {
+
+        setStatus(
+            reportStatus,
+            'Please complete both fields.',
+            'error'
+        );
+
+        return;
+    }
+
+
+    submitButton.disabled = true;
+
+    submitButton.textContent = 'Submitting...';
+
+    setStatus(reportStatus, 'Uploading your find...');
+
+
+    const { error } = await supabase
+        .from('forum_posts')
+        .insert([
+            {
+                username: username,
+                content: content
+            }
+        ]);
+
+
+    submitButton.disabled = false;
+
+    submitButton.textContent = 'Submit Find';
+
+
+    if (error) {
+
+        setStatus(
+            reportStatus,
+            'Submission failed: ' + error.message,
+            'error'
+        );
+
+        return;
+    }
+
+
+    reportForm.reset();
+
+    setStatus(
+        reportStatus,
+        'Success! Your find has been uploaded to the Forum.',
+        'success'
+    );
+
+});
+
+
+// ===================================
+// AUTOMATIC FORUM REFRESH
+// ===================================
+
+window.setInterval(() => {
+
+    if (
+        document.getElementById('forum')
+        .style.display !== 'none'
+    ) {
+
+        window.loadPosts();
+
+    }
+
+}, 15000);
+
+
 </script>
 
 </body>
