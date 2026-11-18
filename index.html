@@ -106,7 +106,7 @@ background: #ff9900;
 color: white;
 }
 
-/* ADDITIONAL FORUM AND ACCOUNT STYLES */
+/* FORUM AND ACCOUNT STYLES */
 
 .forum-panel {
 border: 1px solid #ddd;
@@ -185,6 +185,21 @@ font-size: 14px;
 .small-note {
 font-size: 12px;
 color: #666;
+}
+
+.friend-item {
+border: 1px solid #ddd;
+padding: 12px;
+margin: 10px 0;
+overflow-wrap: anywhere;
+}
+
+.friend-item p {
+margin: 4px 0;
+}
+
+.friend-actions {
+margin: 12px 0;
 }
 
 [hidden] {
@@ -452,6 +467,22 @@ Save Description
 
 <div id="myPosts"></div>
 
+<hr>
+
+<h2>Friend Requests</h2>
+
+<div id="incomingRequests">
+Loading friend requests...
+</div>
+
+<hr>
+
+<h2>Your Friends</h2>
+
+<div id="friendsList">
+Loading friends...
+</div>
+
 </div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
@@ -467,6 +498,8 @@ Save Description
 <div class="content">
 
 <h1 id="viewUsername">Member Profile</h1>
+
+<div id="friendActions" class="friend-actions"></div>
 
 <h2>About This Member</h2>
 
@@ -536,11 +569,17 @@ await updateAccountUI();
 /* HELPERS */
 
 function message(id, text) {
+
 const element = document.getElementById(id);
-if (element) element.textContent = text;
+
+if (element) {
+element.textContent = text;
+}
+
 }
 
 async function currentSession() {
+
 const { data, error } = await supabase.auth.getSession();
 
 if (error) {
@@ -549,13 +588,17 @@ return null;
 }
 
 return data.session;
+
 }
 
 function containsForbiddenContent(text) {
+
 const blockedWords = ['nigger', 'faggot', 'kys'];
+
 const lower = text.toLowerCase();
 
 return blockedWords.some(word => lower.includes(word));
+
 }
 
 
@@ -573,11 +616,15 @@ userButton.className = 'profile-link';
 userButton.textContent = post.username || 'Member';
 
 if (post.user_id) {
+
 userButton.addEventListener('click', () => {
 viewProfile(post.user_id);
 });
+
 } else {
+
 userButton.disabled = true;
+
 }
 
 const date = document.createElement('span');
@@ -588,10 +635,12 @@ date.textContent = post.created_at
 : '';
 
 header.append(userButton, date);
+
 article.appendChild(header);
 
 const content = document.createElement('p');
 content.textContent = post.content || '';
+
 article.appendChild(content);
 
 if (post.media_url) {
@@ -599,23 +648,29 @@ if (post.media_url) {
 let media;
 
 if (post.media_type && post.media_type.startsWith('video/')) {
+
 media = document.createElement('video');
 media.controls = true;
 media.preload = 'metadata';
 
 } else if (post.media_type && post.media_type.startsWith('image/')) {
+
 media = document.createElement('img');
 media.alt = 'Forum upload';
+
 }
 
 if (media) {
+
 media.src = post.media_url;
 article.appendChild(media);
+
 }
 
 }
 
 return article;
+
 }
 
 
@@ -624,6 +679,7 @@ return article;
 window.loadPosts = async function() {
 
 const container = document.getElementById('posts');
+
 container.textContent = 'Loading posts...';
 
 const { data, error } = await supabase
@@ -633,19 +689,25 @@ const { data, error } = await supabase
 .limit(100);
 
 if (error) {
+
 container.textContent = 'Could not load posts: ' + error.message;
 return;
+
 }
 
 container.replaceChildren();
 
 if (!data || data.length === 0) {
+
 container.textContent = 'No finds have been shared yet.';
 return;
+
 }
 
 data.forEach(post => {
+
 container.appendChild(makePostElement(post));
+
 });
 
 };
@@ -656,6 +718,7 @@ container.appendChild(makePostElement(post));
 async function loadMyPosts(userId) {
 
 const container = document.getElementById('myPosts');
+
 container.textContent = 'Loading your posts...';
 
 const { data, error } = await supabase
@@ -665,20 +728,529 @@ const { data, error } = await supabase
 .order('created_at', { ascending: false });
 
 if (error) {
+
 container.textContent = 'Could not load posts: ' + error.message;
 return;
+
 }
 
 container.replaceChildren();
 
 if (!data || data.length === 0) {
+
 container.textContent = 'You have not posted anything yet.';
 return;
+
 }
 
 data.forEach(post => {
+
 container.appendChild(makePostElement(post));
+
 });
+
+}
+
+
+/* FRIEND SYSTEM HELPERS */
+
+async function getMyFriendRequests(userId) {
+
+const { data, error } = await supabase
+.from('friend_requests')
+.select('*')
+.or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
+
+if (error) {
+
+console.error('Friend request error:', error);
+return null;
+
+}
+
+return data || [];
+
+}
+
+
+function createMemberLink(userId, username) {
+
+const button = document.createElement('button');
+
+button.className = 'profile-link';
+button.textContent = username || 'Member';
+
+button.addEventListener('click', () => {
+
+viewProfile(userId);
+
+});
+
+return button;
+
+}
+
+
+/* LOAD INCOMING REQUESTS */
+
+async function loadIncomingRequests(userId) {
+
+const container = document.getElementById('incomingRequests');
+
+container.textContent = 'Loading friend requests...';
+
+const requests = await getMyFriendRequests(userId);
+
+if (!requests) {
+
+container.textContent = 'Could not load friend requests.';
+return;
+
+}
+
+const incoming = requests.filter(request =>
+request.receiver_id === userId &&
+request.status === 'pending'
+);
+
+container.replaceChildren();
+
+if (incoming.length === 0) {
+
+container.textContent = 'You have no pending friend requests.';
+return;
+
+}
+
+for (const request of incoming) {
+
+const { data: profile } = await supabase
+.from('profiles')
+.select('username')
+.eq('id', request.sender_id)
+.single();
+
+const item = document.createElement('div');
+item.className = 'friend-item';
+
+item.appendChild(
+createMemberLink(request.sender_id, profile?.username)
+);
+
+const accept = document.createElement('button');
+
+accept.className = 'feature-button';
+accept.textContent = 'Accept';
+
+accept.addEventListener('click', () => {
+respondToFriendRequest(request.id, 'accepted');
+});
+
+const decline = document.createElement('button');
+
+decline.className = 'feature-button';
+decline.textContent = 'Decline';
+
+decline.addEventListener('click', () => {
+respondToFriendRequest(request.id, 'rejected');
+});
+
+item.appendChild(document.createElement('br'));
+item.append(accept, decline);
+
+container.appendChild(item);
+
+}
+
+}
+
+
+/* ACCEPT OR DECLINE A REQUEST */
+
+async function respondToFriendRequest(requestId, status) {
+
+const session = await currentSession();
+
+if (!session) return;
+
+const { error } = await supabase
+.from('friend_requests')
+.update({ status })
+.eq('id', requestId)
+.eq('receiver_id', session.user.id)
+.eq('status', 'pending');
+
+if (error) {
+
+alert('Could not update friend request: ' + error.message);
+return;
+
+}
+
+await updateAccountUI();
+
+if (document.getElementById('profile').style.display !== 'none') {
+
+const targetId = window.currentProfileId;
+
+if (targetId) {
+await viewProfile(targetId);
+}
+
+}
+
+}
+
+
+/* LOAD FRIENDS LIST */
+
+async function loadFriends(userId) {
+
+const container = document.getElementById('friendsList');
+
+container.textContent = 'Loading friends...';
+
+const requests = await getMyFriendRequests(userId);
+
+if (!requests) {
+
+container.textContent = 'Could not load friends.';
+return;
+
+}
+
+const accepted = requests.filter(request =>
+request.status === 'accepted'
+);
+
+container.replaceChildren();
+
+if (accepted.length === 0) {
+
+container.textContent = 'You do not have any friends yet.';
+return;
+
+}
+
+for (const request of accepted) {
+
+const friendId = request.sender_id === userId
+? request.receiver_id
+: request.sender_id;
+
+const { data: profile } = await supabase
+.from('profiles')
+.select('username, description')
+.eq('id', friendId)
+.single();
+
+const item = document.createElement('div');
+
+item.className = 'friend-item';
+
+item.appendChild(
+createMemberLink(friendId, profile?.username)
+);
+
+const remove = document.createElement('button');
+
+remove.className = 'feature-button';
+remove.textContent = 'Remove Friend';
+
+remove.addEventListener('click', () => {
+removeFriend(request.id);
+});
+
+item.appendChild(document.createElement('br'));
+item.appendChild(remove);
+
+container.appendChild(item);
+
+}
+
+}
+
+
+/* REMOVE FRIEND */
+
+async function removeFriend(requestId) {
+
+const confirmed = confirm('Are you sure you want to remove this friend?');
+
+if (!confirmed) return;
+
+const { error } = await supabase
+.from('friend_requests')
+.delete()
+.eq('id', requestId);
+
+if (error) {
+
+alert('Could not remove friend: ' + error.message);
+return;
+
+}
+
+const session = await currentSession();
+
+if (session) {
+await loadFriends(session.user.id);
+}
+
+}
+
+
+/* SEND FRIEND REQUEST */
+
+window.sendFriendRequest = async function(userId) {
+
+const session = await currentSession();
+
+if (!session) {
+
+alert('Please log in before sending friend requests.');
+return;
+
+}
+
+const myId = session.user.id;
+
+if (myId === userId) return;
+
+const { data: existing, error: searchError } = await supabase
+.from('friend_requests')
+.select('*')
+.or(`and(sender_id.eq.${myId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${myId})`);
+
+if (searchError) {
+
+alert('Could not check friend status: ' + searchError.message);
+return;
+
+}
+
+const accepted = existing.find(request =>
+request.status === 'accepted'
+);
+
+if (accepted) {
+
+alert('You are already friends!');
+return;
+
+}
+
+const pending = existing.find(request =>
+request.status === 'pending'
+);
+
+if (pending) {
+
+alert(
+pending.sender_id === myId
+? 'Your friend request is already pending.'
+: 'This person has already sent you a friend request.'
+);
+
+await viewProfile(userId);
+return;
+
+}
+
+/* DELETE AN OLD DECLINED REQUEST */
+
+for (const request of existing) {
+
+if (request.status === 'rejected') {
+
+const { error } = await supabase
+.from('friend_requests')
+.delete()
+.eq('id', request.id);
+
+if (error) {
+
+alert('Could not reset the previous request: ' + error.message);
+return;
+
+}
+
+}
+
+}
+
+/* CREATE NEW REQUEST */
+
+const { error } = await supabase
+.from('friend_requests')
+.insert({
+
+sender_id: myId,
+receiver_id: userId,
+status: 'pending'
+
+});
+
+if (error) {
+
+alert('Could not send friend request: ' + error.message);
+return;
+
+}
+
+await viewProfile(userId);
+
+};
+
+
+/* PROFILE FRIEND BUTTONS */
+
+async function updateFriendActions(userId) {
+
+const container = document.getElementById('friendActions');
+
+container.replaceChildren();
+
+const session = await currentSession();
+
+if (!session) {
+
+container.textContent = 'Log in to send friend requests.';
+return;
+
+}
+
+const myId = session.user.id;
+
+if (myId === userId) {
+
+container.textContent = 'This is your profile.';
+return;
+
+}
+
+const { data: requests, error } = await supabase
+.from('friend_requests')
+.select('*')
+.or(`and(sender_id.eq.${myId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${myId})`);
+
+if (error) {
+
+container.textContent = 'Could not load friendship status.';
+console.error(error);
+return;
+
+}
+
+const accepted = requests.find(request =>
+request.status === 'accepted'
+);
+
+const pending = requests.find(request =>
+request.status === 'pending'
+);
+
+if (accepted) {
+
+const status = document.createElement('p');
+
+status.textContent = 'You are friends!';
+container.appendChild(status);
+
+const remove = document.createElement('button');
+
+remove.className = 'feature-button';
+remove.textContent = 'Remove Friend';
+
+remove.addEventListener('click', () => {
+removeFriendFromProfile(accepted.id, userId);
+});
+
+container.appendChild(remove);
+
+return;
+
+}
+
+if (pending) {
+
+const status = document.createElement('p');
+
+if (pending.sender_id === myId) {
+
+status.textContent = 'Friend request sent. Waiting for response.';
+
+} else {
+
+status.textContent = 'This person has sent you a friend request.';
+
+const accept = document.createElement('button');
+
+accept.className = 'feature-button';
+accept.textContent = 'Accept';
+
+accept.addEventListener('click', () => {
+respondToFriendRequest(pending.id, 'accepted');
+});
+
+const decline = document.createElement('button');
+
+decline.className = 'feature-button';
+decline.textContent = 'Decline';
+
+decline.addEventListener('click', () => {
+respondToFriendRequest(pending.id, 'rejected');
+});
+
+container.append(status, accept, decline);
+
+return;
+
+}
+
+container.appendChild(status);
+
+return;
+
+}
+
+/* NO EXISTING FRIENDSHIP */
+
+const addButton = document.createElement('button');
+
+addButton.className = 'feature-button';
+addButton.textContent = 'Send Friend Request';
+
+addButton.addEventListener('click', () => {
+sendFriendRequest(userId);
+});
+
+container.appendChild(addButton);
+
+}
+
+
+/* REMOVE FRIEND FROM PROFILE */
+
+async function removeFriendFromProfile(requestId, userId) {
+
+const confirmed = confirm('Are you sure you want to remove this friend?');
+
+if (!confirmed) return;
+
+const { error } = await supabase
+.from('friend_requests')
+.delete()
+.eq('id', requestId);
+
+if (error) {
+
+alert('Could not remove friend: ' + error.message);
+return;
+
+}
+
+await viewProfile(userId);
 
 }
 
@@ -693,9 +1265,12 @@ const loggedOut = document.getElementById('loggedOutPanel');
 const loggedIn = document.getElementById('loggedInPanel');
 
 if (!session) {
+
 loggedOut.hidden = false;
 loggedIn.hidden = true;
+
 return;
+
 }
 
 loggedOut.hidden = true;
@@ -708,8 +1283,10 @@ const { data: profile, error } = await supabase
 .single();
 
 if (error) {
+
 message('profileMessage', 'Could not load profile: ' + error.message);
 return;
+
 }
 
 document.getElementById('profileUsername').textContent =
@@ -720,6 +1297,10 @@ profile.description || '';
 
 await loadMyPosts(session.user.id);
 
+await loadIncomingRequests(session.user.id);
+
+await loadFriends(session.user.id);
+
 }
 
 
@@ -728,37 +1309,54 @@ await loadMyPosts(session.user.id);
 window.signup = async function() {
 
 const username = document.getElementById('signupUsername').value.trim();
+
 const email = document.getElementById('signupEmail').value.trim();
+
 const password = document.getElementById('signupPassword').value;
 
 if (!username || !email || !password) {
+
 return message('accountMessage', 'Complete all fields.');
+
 }
 
 if (username.length > 30 || containsForbiddenContent(username)) {
+
 return message('accountMessage', 'Choose an appropriate username.');
+
 }
 
 if (password.length < 8) {
+
 return message('accountMessage', 'Password must be at least 8 characters.');
+
 }
 
 const { data, error } = await supabase.auth.signUp({
+
 email,
 password,
+
 options: {
 data: { username }
 }
+
 });
 
 if (error) {
+
 return message('accountMessage', error.message);
+
 }
 
 if (data.session) {
+
 message('accountMessage', 'Account created successfully!');
+
 } else {
+
 message('accountMessage', 'Account created. Check your email if confirmation is required.');
+
 }
 
 await updateAccountUI();
@@ -771,18 +1369,24 @@ await updateAccountUI();
 window.login = async function() {
 
 const email = document.getElementById('loginEmail').value.trim();
+
 const password = document.getElementById('loginPassword').value;
 
 const { error } = await supabase.auth.signInWithPassword({
+
 email,
 password
+
 });
 
 if (error) {
+
 return message('accountMessage', error.message);
+
 }
 
 message('accountMessage', 'Successfully logged in!');
+
 await updateAccountUI();
 
 };
@@ -795,10 +1399,13 @@ window.logout = async function() {
 const { error } = await supabase.auth.signOut();
 
 if (error) {
+
 return message('profileMessage', error.message);
+
 }
 
 message('accountMessage', 'Logged out successfully.');
+
 await updateAccountUI();
 
 };
@@ -811,13 +1418,17 @@ window.saveDescription = async function() {
 const session = await currentSession();
 
 if (!session) {
+
 return message('profileMessage', 'Please log in first.');
+
 }
 
 const description = document.getElementById('editDescription').value.trim();
 
 if (containsForbiddenContent(description)) {
+
 return message('profileMessage', 'Your description contains prohibited content.');
+
 }
 
 const { error } = await supabase
@@ -826,7 +1437,9 @@ const { error } = await supabase
 .eq('id', session.user.id);
 
 if (error) {
+
 return message('profileMessage', error.message);
+
 }
 
 message('profileMessage', 'Profile description saved!');
@@ -836,19 +1449,30 @@ message('profileMessage', 'Profile description saved!');
 
 /* VIEW MEMBER PROFILE */
 
+window.currentProfileId = null;
+
 window.viewProfile = async function(userId) {
 
 if (!userId) return;
 
+window.currentProfileId = userId;
+
 showPage('profile');
 
 const usernameElement = document.getElementById('viewUsername');
+
 const descriptionElement = document.getElementById('viewDescription');
+
 const postsElement = document.getElementById('memberPosts');
 
 usernameElement.textContent = 'Loading profile...';
+
 descriptionElement.textContent = '';
+
 postsElement.textContent = 'Loading posts...';
+
+document.getElementById('friendActions').textContent =
+'Loading friendship status...';
 
 const { data: profile, error: profileError } = await supabase
 .from('profiles')
@@ -857,15 +1481,21 @@ const { data: profile, error: profileError } = await supabase
 .single();
 
 if (profileError) {
+
 usernameElement.textContent = 'Profile unavailable';
+
 descriptionElement.textContent = profileError.message;
+
 return;
+
 }
 
 usernameElement.textContent = profile.username || 'Member';
 
 descriptionElement.textContent =
 profile.description || 'This member has not written a description yet.';
+
+await updateFriendActions(userId);
 
 const { data, error } = await supabase
 .from('forum_posts')
@@ -874,19 +1504,25 @@ const { data, error } = await supabase
 .order('created_at', { ascending: false });
 
 if (error) {
+
 postsElement.textContent = 'Could not load posts: ' + error.message;
 return;
+
 }
 
 postsElement.replaceChildren();
 
 if (!data || data.length === 0) {
+
 postsElement.textContent = 'This member has not posted anything yet.';
 return;
+
 }
 
 data.forEach(post => {
+
 postsElement.appendChild(makePostElement(post));
+
 });
 
 };
@@ -903,29 +1539,41 @@ event.preventDefault();
 const session = await currentSession();
 
 if (!session) {
+
 return message('reportMessage', 'Please log in before posting.');
+
 }
 
 const title = document.getElementById('findTitle').value.trim();
+
 const description = document.getElementById('findDescription').value.trim();
+
 const content = title + '\n' + description;
+
 const file = document.getElementById('findMedia').files[0];
 
 if (!title || !description) {
+
 return message('reportMessage', 'Complete the title and description.');
+
 }
 
 if (containsForbiddenContent(content)) {
+
 return message('reportMessage', 'Your report contains prohibited content.');
+
 }
 
 let mediaUrl = null;
+
 let mediaType = null;
+
 let uploadedPath = null;
 
 if (file) {
 
 const allowedTypes = [
+
 'image/jpeg',
 'image/png',
 'image/webp',
@@ -933,14 +1581,19 @@ const allowedTypes = [
 'video/mp4',
 'video/webm',
 'video/quicktime'
+
 ];
 
 if (!allowedTypes.includes(file.type)) {
+
 return message('reportMessage', 'That file type is not supported.');
+
 }
 
 if (file.size > 50 * 1024 * 1024) {
+
 return message('reportMessage', 'File must be smaller than 50 MB.');
+
 }
 
 message('reportMessage', 'Uploading your photo or video...');
@@ -953,12 +1606,16 @@ session.user.id + '/' + crypto.randomUUID() + '-' + safeName;
 const { error: uploadError } = await supabase.storage
 .from('forum-media')
 .upload(uploadedPath, file, {
+
 contentType: file.type,
 upsert: false
+
 });
 
 if (uploadError) {
+
 return message('reportMessage', 'Upload failed: ' + uploadError.message);
+
 }
 
 const { data: publicData } = supabase.storage
@@ -966,6 +1623,7 @@ const { data: publicData } = supabase.storage
 .getPublicUrl(uploadedPath);
 
 mediaUrl = publicData.publicUrl;
+
 mediaType = file.type;
 
 }
@@ -977,27 +1635,39 @@ const { data: profile, error: profileError } = await supabase
 .single();
 
 if (profileError) {
+
 if (uploadedPath) {
+
 await supabase.storage.from('forum-media').remove([uploadedPath]);
+
 }
+
 return message('reportMessage', 'Could not load profile: ' + profileError.message);
+
 }
 
 const { error } = await supabase
 .from('forum_posts')
 .insert({
+
 user_id: session.user.id,
 username: profile.username || 'Member',
 content,
 media_url: mediaUrl,
 media_type: mediaType
+
 });
 
 if (error) {
+
 if (uploadedPath) {
+
 await supabase.storage.from('forum-media').remove([uploadedPath]);
+
 }
+
 return message('reportMessage', 'Could not publish: ' + error.message);
+
 }
 
 document.getElementById('reportForm').reset();
@@ -1015,7 +1685,11 @@ showPage('forum');
 /* START */
 
 supabase.auth.onAuthStateChange(() => {
+
+setTimeout(() => {
 updateAccountUI();
+}, 0);
+
 });
 
 showPage('home');
