@@ -177,5 +177,16 @@ function showPage(pageName) {
 }
 </script>
 
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const supabase = createClient(
+    'https://alnskbaksifcrgluqdio.supabase.co',
+    'sb_publishable_okNP6e1gRixHPB709F5cHA_4TdsBdEs'
+  );
+
+  console.log('Supabase connected!');
+</script>
+
 </body>
 </html>
