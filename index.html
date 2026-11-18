@@ -140,6 +140,11 @@ background: #ff9900;
 color: white;
 }
 
+.feature-button:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+}
+
 .forum-post {
 border: 1px solid #ddd;
 padding: 15px;
@@ -175,6 +180,7 @@ color: #777;
 .status {
 color: #b56500;
 font-size: 14px;
+overflow-wrap: anywhere;
 }
 
 .small-note {
@@ -804,6 +810,8 @@ status.textContent = profiles.length === 100
 ? 'Showing up to 100 accounts. Search to find specific members.'
 : 'Found ' + profiles.length + ' account(s).';
 
+let friendshipErrors = 0;
+
 for (const profile of profiles) {
 
 const item = document.createElement('div');
@@ -888,12 +896,27 @@ await searchMembers();
 
 } catch (error) {
 
-console.error(error);
+/* FIX: SHOW THE REAL SUPABASE ERROR */
+
+console.error('Friend system error:', error);
+
+friendshipErrors++;
+
 addButton.textContent = 'Error';
 addButton.disabled = true;
 
+status.textContent =
+'Friend system error: ' +
+(error.message || 'Unknown error');
+
 }
 
+}
+
+if (friendshipErrors === 0) {
+status.textContent = profiles.length === 100
+? 'Showing up to 100 accounts. Search to find specific members.'
+: 'Found ' + profiles.length + ' account(s).';
 }
 
 };
@@ -1207,7 +1230,7 @@ let requests;
 try {
 requests = await getFriendship(myId, userId);
 } catch (error) {
-container.textContent = 'Could not load friendship status.';
+container.textContent = 'Could not load friendship status: ' + error.message;
 return;
 }
 
