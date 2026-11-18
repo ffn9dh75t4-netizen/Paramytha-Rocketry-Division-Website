@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -234,6 +235,29 @@ gap: 6px;
 flex-wrap: wrap;
 }
 
+/* ALBUM */
+
+#albumGallery {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 15px;
+margin-top: 20px;
+}
+
+.album-item {
+border: 1px solid #ddd;
+padding: 10px;
+overflow: hidden;
+}
+
+.album-item img,
+.album-item video {
+width: 100%;
+max-height: 350px;
+object-fit: contain;
+display: block;
+}
+
 [hidden] {
 display: none !important;
 }
@@ -254,7 +278,7 @@ display: none !important;
 
 <button class="nav-button" onclick="showPage('donate')">Donate</button>
 <button class="nav-button" onclick="showPage('about')">About</button>
-<button class="nav-button" onclick="showPage('album')">Album</button>
+<button class="nav-button" onclick="openAlbum()">Album</button>
 <button class="nav-button" onclick="openForum()">Forum</button>
 <button class="nav-button" onclick="openReport()">Report a Find</button>
 <button class="nav-button" onclick="openAccount()">Account</button>
@@ -315,7 +339,40 @@ creativity and teamwork.
 
 <h1>Our Album</h1>
 <h2>Paramytha Rocketry Division</h2>
-<p>Photos of our rockets, projects and activities will appear here.</p>
+
+<p>Photos and videos of our rockets, projects and activities.</p>
+
+<div id="albumUploadPanel" class="forum-panel" hidden>
+
+<h3>Upload to the Album</h3>
+
+<form id="albumUploadForm">
+
+<label for="albumFiles">Choose photos or videos</label>
+
+<input
+id="albumFiles"
+type="file"
+accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+multiple
+required
+>
+
+<p class="small-note">
+You can upload multiple photos and videos.
+Maximum file size: 50 MB per file.
+</p>
+
+<button class="feature-button" type="submit">
+Upload Files
+</button>
+
+<p id="albumMessage" class="status"></p>
+
+</form>
+</div>
+
+<div id="albumGallery">Loading album...</div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
 
@@ -528,6 +585,16 @@ const SUPABASE_KEY = 'sb_publishable_okNP6e1gRixHPB709F5cHA_4TdsBdEs';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
+/* ADMIN ALBUM SETTINGS */
+
+const ALBUM_OWNER = 'emil.athanasiou@yahoo.com';
+const ALBUM_BUCKET = 'album-media';
+
+function isAlbumOwner(session) {
+    return session?.user?.email?.toLowerCase() === ALBUM_OWNER;
+}
+
+
 /* NAVIGATION */
 
 window.showPage = function(pageName) {
@@ -591,6 +658,175 @@ const lower = text.toLowerCase();
 return blockedWords.some(word => lower.includes(word));
 
 }
+
+
+/* ALBUM */
+
+window.openAlbum = async function() {
+showPage('album');
+await loadAlbum();
+};
+
+async function loadAlbum() {
+
+const gallery = document.getElementById('albumGallery');
+const uploadPanel = document.getElementById('albumUploadPanel');
+
+const session = await currentSession();
+
+uploadPanel.hidden = !isAlbumOwner(session);
+
+gallery.textContent = 'Loading album...';
+
+const { data, error } = await supabase.storage
+.from(ALBUM_BUCKET)
+.list('album', {
+    limit: 100,
+    sortBy: {
+        column: 'created_at',
+        order: 'desc'
+    }
+});
+
+if (error) {
+gallery.textContent = 'Could not load album: ' + error.message;
+return;
+}
+
+gallery.replaceChildren();
+
+const files = (data || []).filter(file => file.name);
+
+if (files.length === 0) {
+gallery.textContent = 'No photos or videos have been uploaded yet.';
+return;
+}
+
+files.forEach(file => {
+
+const path = 'album/' + file.name;
+
+const { data: publicData } = supabase.storage
+.from(ALBUM_BUCKET)
+.getPublicUrl(path);
+
+const item = document.createElement('div');
+item.className = 'album-item';
+
+const url = publicData.publicUrl;
+
+if (/\.(mp4|webm|mov)$/i.test(file.name)) {
+
+const video = document.createElement('video');
+video.src = url;
+video.controls = true;
+video.preload = 'metadata';
+
+item.appendChild(video);
+
+} else {
+
+const image = document.createElement('img');
+image.src = url;
+image.alt = 'Paramytha Rocketry Division album photo';
+image.loading = 'lazy';
+
+item.appendChild(image);
+
+}
+
+gallery.appendChild(item);
+
+});
+
+}
+
+
+/* ALBUM UPLOAD */
+
+document.getElementById('albumUploadForm').addEventListener(
+'submit',
+async event => {
+
+event.preventDefault();
+
+const session = await currentSession();
+
+if (!isAlbumOwner(session)) {
+return message('albumMessage', 'You are not authorised to upload.');
+}
+
+const input = document.getElementById('albumFiles');
+const files = Array.from(input.files);
+
+if (files.length === 0) {
+return message('albumMessage', 'Choose at least one file.');
+}
+
+const allowedTypes = [
+'image/jpeg',
+'image/png',
+'image/webp',
+'image/gif',
+'video/mp4',
+'video/webm',
+'video/quicktime'
+];
+
+for (const file of files) {
+
+if (!allowedTypes.includes(file.type)) {
+return message('albumMessage', 'Unsupported file: ' + file.name);
+}
+
+if (file.size > 50 * 1024 * 1024) {
+return message('albumMessage', file.name + ' is larger than 50 MB.');
+}
+
+}
+
+const submitButton = event.target.querySelector('button[type="submit"]');
+submitButton.disabled = true;
+
+for (let i = 0; i < files.length; i++) {
+
+const file = files[i];
+
+message(
+'albumMessage',
+'Uploading ' + (i + 1) + ' of ' + files.length + ': ' + file.name
+);
+
+const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+const path =
+'album/' + crypto.randomUUID() + '-' + safeName;
+
+const { error } = await supabase.storage
+.from(ALBUM_BUCKET)
+.upload(path, file, {
+contentType: file.type,
+upsert: false
+});
+
+if (error) {
+message('albumMessage', 'Upload failed: ' + error.message);
+submitButton.disabled = false;
+return;
+}
+
+}
+
+input.value = '';
+
+message('albumMessage', 'All files uploaded successfully!');
+
+submitButton.disabled = false;
+
+await loadAlbum();
+
+}
+);
 
 
 /* FRIENDSHIP STATUS */
