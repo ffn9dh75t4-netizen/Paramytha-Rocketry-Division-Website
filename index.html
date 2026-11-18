@@ -7,15 +7,13 @@
 <title>Paramytha Rocketry Division</title>
 
 <style>
-* {
-box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
 margin: 0;
 padding: 0;
 width: 100%;
-height: 100%;
+min-height: 100%;
 font-family: Arial, sans-serif;
 background: white;
 }
@@ -50,7 +48,7 @@ max-width: 100vw;
 object-fit: contain;
 }
 
-/* ORIGINAL BUTTON POSITION AND STYLE */
+/* HOME BUTTONS */
 
 .navigation {
 position: absolute;
@@ -78,18 +76,17 @@ background: #ff9900;
 color: white;
 }
 
-/* ORIGINAL OTHER PAGE STYLE */
+/* OTHER PAGES */
 
 .content {
 max-width: 900px;
+width: 100%;
 margin: auto;
 padding: 50px 25px;
 line-height: 1.7;
 }
 
-h1 {
-color: #ff9900;
-}
+h1 { color: #ff9900; }
 
 .back {
 margin-top: 25px;
@@ -106,7 +103,7 @@ background: #ff9900;
 color: white;
 }
 
-/* FORUM AND ACCOUNT STYLES */
+/* FORUM AND ACCOUNT */
 
 .forum-panel {
 border: 1px solid #ddd;
@@ -150,9 +147,7 @@ margin: 14px 0;
 overflow-wrap: anywhere;
 }
 
-.forum-post p {
-white-space: pre-wrap;
-}
+.forum-post p { white-space: pre-wrap; }
 
 .forum-post img,
 .forum-post video {
@@ -194,12 +189,44 @@ margin: 10px 0;
 overflow-wrap: anywhere;
 }
 
-.friend-item p {
-margin: 4px 0;
+.friend-item p { margin: 4px 0; }
+
+.friend-actions { margin: 12px 0; }
+
+.search-box {
+width: 100%;
+padding: 12px;
+border: 1px solid #ccc;
+font-size: 16px;
+margin: 10px 0 15px;
 }
 
-.friend-actions {
-margin: 12px 0;
+.member-result {
+border: 1px solid #ddd;
+padding: 14px;
+margin: 10px 0;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+flex-wrap: wrap;
+}
+
+.member-result-name {
+font-weight: bold;
+color: #d97800;
+cursor: pointer;
+text-decoration: underline;
+border: none;
+background: none;
+padding: 0;
+font-size: 15px;
+}
+
+.member-result-actions {
+display: flex;
+gap: 6px;
+flex-wrap: wrap;
 }
 
 [hidden] {
@@ -221,19 +248,14 @@ display: none !important;
 <nav class="navigation">
 
 <button class="nav-button" onclick="showPage('donate')">Donate</button>
-
 <button class="nav-button" onclick="showPage('about')">About</button>
-
 <button class="nav-button" onclick="showPage('album')">Album</button>
-
 <button class="nav-button" onclick="openForum()">Forum</button>
-
 <button class="nav-button" onclick="openReport()">Report a Find</button>
-
 <button class="nav-button" onclick="openAccount()">Account</button>
+<button class="nav-button" onclick="openFriends()">Add Friends +</button>
 
 </nav>
-
 </div>
 </div>
 
@@ -241,15 +263,11 @@ display: none !important;
 <!-- DONATE -->
 
 <div id="donate" class="page">
-
 <div class="content">
 
 <h1>Donate</h1>
-
 <h2>Support Paramytha Rocketry Division</h2>
-
 <p>Help us support our interest in aerospace engineering and rocketry.</p>
-
 <p>Donation information coming soon.</p>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
@@ -261,11 +279,9 @@ display: none !important;
 <!-- ABOUT -->
 
 <div id="about" class="page">
-
 <div class="content">
 
 <h1>About Us</h1>
-
 <h2>Paramytha Rocketry Division</h2>
 
 <p>
@@ -290,13 +306,10 @@ creativity and teamwork.
 <!-- ALBUM -->
 
 <div id="album" class="page">
-
 <div class="content">
 
 <h1>Our Album</h1>
-
 <h2>Paramytha Rocketry Division</h2>
-
 <p>Photos of our rockets, projects and activities will appear here.</p>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
@@ -308,22 +321,16 @@ creativity and teamwork.
 <!-- FORUM -->
 
 <div id="forum" class="page">
-
 <div class="content">
 
 <h1>Forum</h1>
-
 <h2>Paramytha Rocketry Division Community</h2>
-
 <p>See finds and posts shared by members around the world.</p>
 
 <button class="feature-button" onclick="openReport()">Report a Find</button>
-
 <button class="feature-button" onclick="loadPosts()">Refresh</button>
 
-<div id="posts">
-Loading posts...
-</div>
+<div id="posts">Loading posts...</div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
 
@@ -334,11 +341,9 @@ Loading posts...
 <!-- REPORT A FIND -->
 
 <div id="report" class="page">
-
 <div class="content">
 
 <h1>Report a Find</h1>
-
 <h2>Share Your Find</h2>
 
 <div class="forum-panel">
@@ -346,44 +351,25 @@ Loading posts...
 <form id="reportForm">
 
 <label for="findTitle">Title</label>
-
-<input
-id="findTitle"
-type="text"
-maxlength="100"
-placeholder="Give your find a title"
-required
->
+<input id="findTitle" type="text" maxlength="100"
+placeholder="Give your find a title" required>
 
 <label for="findDescription">Description</label>
-
-<textarea
-id="findDescription"
-maxlength="2000"
-placeholder="Describe what you found..."
-required
-></textarea>
+<textarea id="findDescription" maxlength="2000"
+placeholder="Describe what you found..." required></textarea>
 
 <label for="findMedia">Photo or Video</label>
-
-<input
-id="findMedia"
-type="file"
-accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
->
+<input id="findMedia" type="file"
+accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime">
 
 <p class="small-note">
 Photos and videos are optional. Maximum file size: 50 MB.
 </p>
 
-<button class="feature-button" type="submit">
-Publish Find
-</button>
-
+<button class="feature-button" type="submit">Publish Find</button>
 <p id="reportMessage" class="status"></p>
 
 </form>
-
 </div>
 
 <button class="back" onclick="openForum()">Back to Forum</button>
@@ -395,7 +381,6 @@ Publish Find
 <!-- ACCOUNT -->
 
 <div id="account" class="page">
-
 <div class="content">
 
 <h1>Account</h1>
@@ -405,15 +390,12 @@ Publish Find
 <h2>Create an Account</h2>
 
 <label for="signupUsername">Username</label>
-
 <input id="signupUsername" type="text" maxlength="30" placeholder="Choose a username">
 
 <label for="signupEmail">Email</label>
-
 <input id="signupEmail" type="email" placeholder="Email address">
 
 <label for="signupPassword">Password</label>
-
 <input id="signupPassword" type="password" placeholder="At least 8 characters">
 
 <button class="feature-button" onclick="signup()">Create Account</button>
@@ -423,11 +405,9 @@ Publish Find
 <h2>Log In</h2>
 
 <label for="loginEmail">Email</label>
-
 <input id="loginEmail" type="email" placeholder="Email address">
 
 <label for="loginPassword">Password</label>
-
 <input id="loginPassword" type="password" placeholder="Password">
 
 <button class="feature-button" onclick="login()">Log In</button>
@@ -436,11 +416,9 @@ Publish Find
 
 </div>
 
-
 <div id="loggedInPanel" class="forum-panel" hidden>
 
 <h2>Your Account</h2>
-
 <p id="profileUsername"></p>
 
 <button class="feature-button" onclick="logout()">Log Out</button>
@@ -449,41 +427,58 @@ Publish Find
 
 <h2>Your Profile Description</h2>
 
-<textarea
-id="editDescription"
-maxlength="500"
-placeholder="Write something about yourself..."
-></textarea>
+<textarea id="editDescription" maxlength="500"
+placeholder="Write something about yourself..."></textarea>
 
-<button class="feature-button" onclick="saveDescription()">
-Save Description
-</button>
-
+<button class="feature-button" onclick="saveDescription()">Save Description</button>
 <p id="profileMessage" class="status"></p>
 
 <hr>
 
 <h2>Your Forum Posts</h2>
-
 <div id="myPosts"></div>
 
 <hr>
 
 <h2>Friend Requests</h2>
-
-<div id="incomingRequests">
-Loading friend requests...
-</div>
+<div id="incomingRequests">Loading friend requests...</div>
 
 <hr>
 
 <h2>Your Friends</h2>
-
-<div id="friendsList">
-Loading friends...
-</div>
+<div id="friendsList">Loading friends...</div>
 
 </div>
+
+<button class="back" onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
+
+
+<!-- ADD FRIENDS PAGE -->
+
+<div id="friends" class="page">
+<div class="content">
+
+<h1>Add Friends +</h1>
+
+<h2>Find Members</h2>
+
+<p>Search for other Paramytha Rocketry Division members.</p>
+
+<input
+id="memberSearch"
+class="search-box"
+type="search"
+placeholder="Search usernames..."
+autocomplete="off"
+oninput="searchMembers()"
+>
+
+<p id="memberSearchMessage" class="status">Loading accounts...</p>
+
+<div id="memberResults"></div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
 
@@ -494,7 +489,6 @@ Loading friends...
 <!-- MEMBER PROFILE -->
 
 <div id="profile" class="page">
-
 <div class="content">
 
 <h1 id="viewUsername">Member Profile</h1>
@@ -502,16 +496,14 @@ Loading friends...
 <div id="friendActions" class="friend-actions"></div>
 
 <h2>About This Member</h2>
-
 <p id="viewDescription"></p>
 
 <hr>
 
 <h2>Their Forum Posts</h2>
-
 <div id="memberPosts"></div>
 
-<button class="back" onclick="openForum()">Back to Forum</button>
+<button class="back" onclick="openFriends()">Back to Add Friends</button>
 
 </div>
 </div>
@@ -524,20 +516,14 @@ Loading friends...
 import { createClient } from
 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-
-/* YOUR SUPABASE PROJECT DETAILS */
-
 const SUPABASE_URL = 'https://alnskbaksifcrgluqdio.supabase.co';
 
 const SUPABASE_KEY = 'sb_publishable_okNP6e1gRixHPB709F5cHA_4TdsBdEs';
 
-const supabase = createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
-/* PAGE NAVIGATION */
+/* NAVIGATION */
 
 window.showPage = function(pageName) {
 
@@ -565,17 +551,18 @@ showPage('account');
 await updateAccountUI();
 };
 
+window.openFriends = async function() {
+showPage('friends');
+document.getElementById('memberSearch').value = '';
+await searchMembers();
+};
+
 
 /* HELPERS */
 
 function message(id, text) {
-
 const element = document.getElementById(id);
-
-if (element) {
-element.textContent = text;
-}
-
+if (element) element.textContent = text;
 }
 
 async function currentSession() {
@@ -594,7 +581,6 @@ return data.session;
 function containsForbiddenContent(text) {
 
 const blockedWords = ['nigger', 'faggot', 'kys'];
-
 const lower = text.toLowerCase();
 
 return blockedWords.some(word => lower.includes(word));
@@ -602,8 +588,23 @@ return blockedWords.some(word => lower.includes(word));
 }
 
 
-/* CREATE A POST DISPLAY */
-/* UPDATED: ORANGE USERNAMES NOW OPEN MEMBER PROFILES */
+/* FRIENDSHIP STATUS */
+
+async function getFriendship(myId, userId) {
+
+const { data, error } = await supabase
+.from('friend_requests')
+.select('*')
+.or(`and(sender_id.eq.${myId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${myId})`);
+
+if (error) throw error;
+
+return data || [];
+
+}
+
+
+/* CREATE POST */
 
 function makePostElement(post) {
 
@@ -611,7 +612,6 @@ const article = document.createElement('article');
 article.className = 'forum-post';
 
 const header = document.createElement('div');
-
 const userButton = document.createElement('button');
 
 userButton.type = 'button';
@@ -625,8 +625,6 @@ userButton.disabled = true;
 try {
 
 let userId = post.user_id;
-
-/* LOOK UP THE PROFILE IF THE POST HAS NO USER ID */
 
 if (!userId && post.username) {
 
@@ -643,24 +641,19 @@ userId = profile?.id;
 }
 
 if (!userId) {
-
 alert('This post is not linked to a member profile.');
 return;
-
 }
 
 await window.viewProfile(userId);
 
 } catch (error) {
 
-console.error('Profile opening error:', error);
-
+console.error(error);
 alert('Could not open profile: ' + error.message);
 
 } finally {
-
 userButton.disabled = false;
-
 }
 
 });
@@ -673,12 +666,10 @@ date.textContent = post.created_at
 : '';
 
 header.append(userButton, date);
-
 article.appendChild(header);
 
 const content = document.createElement('p');
 content.textContent = post.content || '';
-
 article.appendChild(content);
 
 if (post.media_url) {
@@ -686,23 +677,17 @@ if (post.media_url) {
 let media;
 
 if (post.media_type && post.media_type.startsWith('video/')) {
-
 media = document.createElement('video');
 media.controls = true;
 media.preload = 'metadata';
-
 } else if (post.media_type && post.media_type.startsWith('image/')) {
-
 media = document.createElement('img');
 media.alt = 'Forum upload';
-
 }
 
 if (media) {
-
 media.src = post.media_url;
 article.appendChild(media);
-
 }
 
 }
@@ -712,12 +697,11 @@ return article;
 }
 
 
-/* LOAD FORUM POSTS */
+/* LOAD POSTS */
 
 window.loadPosts = async function() {
 
 const container = document.getElementById('posts');
-
 container.textContent = 'Loading posts...';
 
 const { data, error } = await supabase
@@ -727,36 +711,27 @@ const { data, error } = await supabase
 .limit(100);
 
 if (error) {
-
 container.textContent = 'Could not load posts: ' + error.message;
 return;
-
 }
 
 container.replaceChildren();
 
 if (!data || data.length === 0) {
-
 container.textContent = 'No finds have been shared yet.';
 return;
-
 }
 
-data.forEach(post => {
-
-container.appendChild(makePostElement(post));
-
-});
+data.forEach(post => container.appendChild(makePostElement(post)));
 
 };
 
 
-/* LOAD YOUR OWN POSTS */
+/* LOAD OWN POSTS */
 
 async function loadMyPosts(userId) {
 
 const container = document.getElementById('myPosts');
-
 container.textContent = 'Loading your posts...';
 
 const { data, error } = await supabase
@@ -766,31 +741,165 @@ const { data, error } = await supabase
 .order('created_at', { ascending: false });
 
 if (error) {
-
 container.textContent = 'Could not load posts: ' + error.message;
 return;
-
 }
 
 container.replaceChildren();
 
 if (!data || data.length === 0) {
-
 container.textContent = 'You have not posted anything yet.';
 return;
+}
+
+data.forEach(post => container.appendChild(makePostElement(post)));
 
 }
 
-data.forEach(post => {
 
-container.appendChild(makePostElement(post));
+/* MEMBER SEARCH */
+
+window.searchMembers = async function() {
+
+const container = document.getElementById('memberResults');
+const status = document.getElementById('memberSearchMessage');
+const search = document.getElementById('memberSearch').value.trim();
+
+container.replaceChildren();
+status.textContent = 'Loading accounts...';
+
+const session = await currentSession();
+
+if (!session) {
+status.textContent = 'Please log in to find and add friends.';
+return;
+}
+
+let query = supabase
+.from('profiles')
+.select('id, username, description')
+.neq('id', session.user.id)
+.order('username', { ascending: true })
+.limit(100);
+
+if (search) {
+query = query.ilike('username', '%' + search.replace(/[,%()]/g, '') + '%');
+}
+
+const { data: profiles, error } = await query;
+
+if (error) {
+status.textContent = 'Could not load accounts: ' + error.message;
+return;
+}
+
+if (!profiles || profiles.length === 0) {
+status.textContent = search
+? 'No accounts found matching that username.'
+: 'No other accounts have registered yet.';
+return;
+}
+
+status.textContent = profiles.length === 100
+? 'Showing up to 100 accounts. Search to find specific members.'
+: 'Found ' + profiles.length + ' account(s).';
+
+for (const profile of profiles) {
+
+const item = document.createElement('div');
+item.className = 'member-result';
+
+const info = document.createElement('div');
+
+const name = document.createElement('button');
+name.className = 'member-result-name';
+name.textContent = profile.username || 'Member';
+
+name.addEventListener('click', () => {
+viewProfile(profile.id);
+});
+
+const description = document.createElement('p');
+description.className = 'small-note';
+description.textContent = profile.description || 'No profile description.';
+
+info.append(name, description);
+
+const actions = document.createElement('div');
+actions.className = 'member-result-actions';
+
+const addButton = document.createElement('button');
+addButton.className = 'feature-button';
+addButton.textContent = 'Checking...';
+addButton.disabled = true;
+
+actions.appendChild(addButton);
+item.append(info, actions);
+container.appendChild(item);
+
+try {
+
+const requests = await getFriendship(session.user.id, profile.id);
+
+const accepted = requests.find(r => r.status === 'accepted');
+const pending = requests.find(r => r.status === 'pending');
+
+addButton.disabled = false;
+
+if (accepted) {
+
+addButton.textContent = 'Friends';
+addButton.disabled = true;
+
+} else if (pending) {
+
+if (pending.sender_id === session.user.id) {
+
+addButton.textContent = 'Request Pending';
+addButton.disabled = true;
+
+} else {
+
+addButton.textContent = 'Accept Request';
+
+addButton.addEventListener('click', async () => {
+await respondToFriendRequest(pending.id, 'accepted');
+await searchMembers();
+});
+
+}
+
+} else {
+
+addButton.textContent = 'Add Friend';
+
+addButton.addEventListener('click', async () => {
+
+addButton.disabled = true;
+addButton.textContent = 'Sending...';
+
+await sendFriendRequest(profile.id);
+
+await searchMembers();
 
 });
 
 }
 
+} catch (error) {
 
-/* FRIEND SYSTEM HELPERS */
+console.error(error);
+addButton.textContent = 'Error';
+addButton.disabled = true;
+
+}
+
+}
+
+};
+
+
+/* FRIEND REQUESTS */
 
 async function getMyFriendRequests(userId) {
 
@@ -800,10 +909,8 @@ const { data, error } = await supabase
 .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
 
 if (error) {
-
-console.error('Friend request error:', error);
+console.error(error);
 return null;
-
 }
 
 return data || [];
@@ -814,50 +921,39 @@ return data || [];
 function createMemberLink(userId, username) {
 
 const button = document.createElement('button');
-
 button.className = 'profile-link';
 button.textContent = username || 'Member';
 
-button.addEventListener('click', () => {
-
-viewProfile(userId);
-
-});
+button.addEventListener('click', () => viewProfile(userId));
 
 return button;
 
 }
 
 
-/* LOAD INCOMING REQUESTS */
+/* INCOMING REQUESTS */
 
 async function loadIncomingRequests(userId) {
 
 const container = document.getElementById('incomingRequests');
-
 container.textContent = 'Loading friend requests...';
 
 const requests = await getMyFriendRequests(userId);
 
 if (!requests) {
-
 container.textContent = 'Could not load friend requests.';
 return;
-
 }
 
 const incoming = requests.filter(request =>
-request.receiver_id === userId &&
-request.status === 'pending'
+request.receiver_id === userId && request.status === 'pending'
 );
 
 container.replaceChildren();
 
 if (incoming.length === 0) {
-
 container.textContent = 'You have no pending friend requests.';
 return;
-
 }
 
 for (const request of incoming) {
@@ -871,31 +967,26 @@ const { data: profile } = await supabase
 const item = document.createElement('div');
 item.className = 'friend-item';
 
-item.appendChild(
-createMemberLink(request.sender_id, profile?.username)
-);
+item.appendChild(createMemberLink(request.sender_id, profile?.username));
 
 const accept = document.createElement('button');
-
 accept.className = 'feature-button';
 accept.textContent = 'Accept';
 
-accept.addEventListener('click', () => {
-respondToFriendRequest(request.id, 'accepted');
+accept.addEventListener('click', async () => {
+await respondToFriendRequest(request.id, 'accepted');
 });
 
 const decline = document.createElement('button');
-
 decline.className = 'feature-button';
 decline.textContent = 'Decline';
 
-decline.addEventListener('click', () => {
-respondToFriendRequest(request.id, 'rejected');
+decline.addEventListener('click', async () => {
+await respondToFriendRequest(request.id, 'rejected');
 });
 
 item.appendChild(document.createElement('br'));
 item.append(accept, decline);
-
 container.appendChild(item);
 
 }
@@ -903,12 +994,11 @@ container.appendChild(item);
 }
 
 
-/* ACCEPT OR DECLINE A REQUEST */
+/* ACCEPT OR DECLINE */
 
 async function respondToFriendRequest(requestId, status) {
 
 const session = await currentSession();
-
 if (!session) return;
 
 const { error } = await supabase
@@ -919,55 +1009,40 @@ const { error } = await supabase
 .eq('status', 'pending');
 
 if (error) {
-
 alert('Could not update friend request: ' + error.message);
 return;
-
 }
 
 await updateAccountUI();
 
-if (document.getElementById('profile').style.display !== 'none') {
-
-const targetId = window.currentProfileId;
-
-if (targetId) {
-await viewProfile(targetId);
-}
-
+if (window.currentProfileId) {
+await viewProfile(window.currentProfileId);
 }
 
 }
 
 
-/* LOAD FRIENDS LIST */
+/* FRIENDS LIST */
 
 async function loadFriends(userId) {
 
 const container = document.getElementById('friendsList');
-
 container.textContent = 'Loading friends...';
 
 const requests = await getMyFriendRequests(userId);
 
 if (!requests) {
-
 container.textContent = 'Could not load friends.';
 return;
-
 }
 
-const accepted = requests.filter(request =>
-request.status === 'accepted'
-);
+const accepted = requests.filter(request => request.status === 'accepted');
 
 container.replaceChildren();
 
 if (accepted.length === 0) {
-
 container.textContent = 'You do not have any friends yet.';
 return;
-
 }
 
 for (const request of accepted) {
@@ -983,21 +1058,15 @@ const { data: profile } = await supabase
 .single();
 
 const item = document.createElement('div');
-
 item.className = 'friend-item';
 
-item.appendChild(
-createMemberLink(friendId, profile?.username)
-);
+item.appendChild(createMemberLink(friendId, profile?.username));
 
 const remove = document.createElement('button');
-
 remove.className = 'feature-button';
 remove.textContent = 'Remove Friend';
 
-remove.addEventListener('click', () => {
-removeFriend(request.id);
-});
+remove.addEventListener('click', () => removeFriend(request.id));
 
 item.appendChild(document.createElement('br'));
 item.appendChild(remove);
@@ -1013,9 +1082,7 @@ container.appendChild(item);
 
 async function removeFriend(requestId) {
 
-const confirmed = confirm('Are you sure you want to remove this friend?');
-
-if (!confirmed) return;
+if (!confirm('Are you sure you want to remove this friend?')) return;
 
 const { error } = await supabase
 .from('friend_requests')
@@ -1023,10 +1090,8 @@ const { error } = await supabase
 .eq('id', requestId);
 
 if (error) {
-
 alert('Could not remove friend: ' + error.message);
 return;
-
 }
 
 const session = await currentSession();
@@ -1045,57 +1110,40 @@ window.sendFriendRequest = async function(userId) {
 const session = await currentSession();
 
 if (!session) {
-
 alert('Please log in before sending friend requests.');
 return;
-
 }
 
 const myId = session.user.id;
 
 if (myId === userId) return;
 
-const { data: existing, error: searchError } = await supabase
-.from('friend_requests')
-.select('*')
-.or(`and(sender_id.eq.${myId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${myId})`);
+let existing;
 
-if (searchError) {
-
-alert('Could not check friend status: ' + searchError.message);
+try {
+existing = await getFriendship(myId, userId);
+} catch (error) {
+alert('Could not check friend status: ' + error.message);
 return;
-
 }
 
-const accepted = existing.find(request =>
-request.status === 'accepted'
-);
-
-if (accepted) {
-
+if (existing.some(r => r.status === 'accepted')) {
 alert('You are already friends!');
 return;
-
 }
 
-const pending = existing.find(request =>
-request.status === 'pending'
-);
+const pending = existing.find(r => r.status === 'pending');
 
 if (pending) {
 
-alert(
-pending.sender_id === myId
-? 'Your friend request is already pending.'
-: 'This person has already sent you a friend request.'
-);
-
-await viewProfile(userId);
-return;
-
+if (pending.sender_id === myId) {
+alert('Your friend request is already pending.');
+} else {
+alert('This person has already sent you a friend request. You can accept it.');
 }
 
-/* DELETE AN OLD DECLINED REQUEST */
+return;
+}
 
 for (const request of existing) {
 
@@ -1107,36 +1155,28 @@ const { error } = await supabase
 .eq('id', request.id);
 
 if (error) {
-
 alert('Could not reset the previous request: ' + error.message);
 return;
-
 }
 
 }
 
 }
-
-/* CREATE NEW REQUEST */
 
 const { error } = await supabase
 .from('friend_requests')
 .insert({
-
 sender_id: myId,
 receiver_id: userId,
 status: 'pending'
-
 });
 
 if (error) {
-
 alert('Could not send friend request: ' + error.message);
 return;
-
 }
 
-await viewProfile(userId);
+alert('Friend request sent!');
 
 };
 
@@ -1146,57 +1186,40 @@ await viewProfile(userId);
 async function updateFriendActions(userId) {
 
 const container = document.getElementById('friendActions');
-
 container.replaceChildren();
 
 const session = await currentSession();
 
 if (!session) {
-
 container.textContent = 'Log in to send friend requests.';
 return;
-
 }
 
 const myId = session.user.id;
 
 if (myId === userId) {
-
 container.textContent = 'This is your profile.';
 return;
-
 }
 
-const { data: requests, error } = await supabase
-.from('friend_requests')
-.select('*')
-.or(`and(sender_id.eq.${myId},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${myId})`);
+let requests;
 
-if (error) {
-
+try {
+requests = await getFriendship(myId, userId);
+} catch (error) {
 container.textContent = 'Could not load friendship status.';
-console.error(error);
 return;
-
 }
 
-const accepted = requests.find(request =>
-request.status === 'accepted'
-);
-
-const pending = requests.find(request =>
-request.status === 'pending'
-);
+const accepted = requests.find(r => r.status === 'accepted');
+const pending = requests.find(r => r.status === 'pending');
 
 if (accepted) {
 
 const status = document.createElement('p');
-
 status.textContent = 'You are friends!';
-container.appendChild(status);
 
 const remove = document.createElement('button');
-
 remove.className = 'feature-button';
 remove.textContent = 'Remove Friend';
 
@@ -1204,8 +1227,7 @@ remove.addEventListener('click', () => {
 removeFriendFromProfile(accepted.id, userId);
 });
 
-container.appendChild(remove);
-
+container.append(status, remove);
 return;
 
 }
@@ -1217,50 +1239,48 @@ const status = document.createElement('p');
 if (pending.sender_id === myId) {
 
 status.textContent = 'Friend request sent. Waiting for response.';
+container.appendChild(status);
 
 } else {
 
 status.textContent = 'This person has sent you a friend request.';
 
 const accept = document.createElement('button');
-
 accept.className = 'feature-button';
 accept.textContent = 'Accept';
 
-accept.addEventListener('click', () => {
-respondToFriendRequest(pending.id, 'accepted');
+accept.addEventListener('click', async () => {
+await respondToFriendRequest(pending.id, 'accepted');
 });
 
 const decline = document.createElement('button');
-
 decline.className = 'feature-button';
 decline.textContent = 'Decline';
 
-decline.addEventListener('click', () => {
-respondToFriendRequest(pending.id, 'rejected');
+decline.addEventListener('click', async () => {
+await respondToFriendRequest(pending.id, 'rejected');
 });
 
 container.append(status, accept, decline);
 
-return;
-
 }
-
-container.appendChild(status);
 
 return;
 
 }
-
-/* NO EXISTING FRIENDSHIP */
 
 const addButton = document.createElement('button');
-
 addButton.className = 'feature-button';
-addButton.textContent = 'Send Friend Request';
+addButton.textContent = 'Add Friend';
 
-addButton.addEventListener('click', () => {
-sendFriendRequest(userId);
+addButton.addEventListener('click', async () => {
+
+addButton.disabled = true;
+addButton.textContent = 'Sending...';
+
+await sendFriendRequest(userId);
+await updateFriendActions(userId);
+
 });
 
 container.appendChild(addButton);
@@ -1272,9 +1292,7 @@ container.appendChild(addButton);
 
 async function removeFriendFromProfile(requestId, userId) {
 
-const confirmed = confirm('Are you sure you want to remove this friend?');
-
-if (!confirmed) return;
+if (!confirm('Are you sure you want to remove this friend?')) return;
 
 const { error } = await supabase
 .from('friend_requests')
@@ -1282,10 +1300,8 @@ const { error } = await supabase
 .eq('id', requestId);
 
 if (error) {
-
 alert('Could not remove friend: ' + error.message);
 return;
-
 }
 
 await viewProfile(userId);
@@ -1306,7 +1322,6 @@ if (!session) {
 
 loggedOut.hidden = false;
 loggedIn.hidden = true;
-
 return;
 
 }
@@ -1321,10 +1336,8 @@ const { data: profile, error } = await supabase
 .single();
 
 if (error) {
-
 message('profileMessage', 'Could not load profile: ' + error.message);
 return;
-
 }
 
 document.getElementById('profileUsername').textContent =
@@ -1334,9 +1347,7 @@ document.getElementById('editDescription').value =
 profile.description || '';
 
 await loadMyPosts(session.user.id);
-
 await loadIncomingRequests(session.user.id);
-
 await loadFriends(session.user.id);
 
 }
@@ -1347,27 +1358,33 @@ await loadFriends(session.user.id);
 window.signup = async function() {
 
 const username = document.getElementById('signupUsername').value.trim();
-
 const email = document.getElementById('signupEmail').value.trim();
-
 const password = document.getElementById('signupPassword').value;
 
 if (!username || !email || !password) {
-
 return message('accountMessage', 'Complete all fields.');
-
 }
 
 if (username.length > 30 || containsForbiddenContent(username)) {
-
 return message('accountMessage', 'Choose an appropriate username.');
-
 }
 
 if (password.length < 8) {
-
 return message('accountMessage', 'Password must be at least 8 characters.');
+}
 
+const { data: existingProfile, error: usernameError } = await supabase
+.from('profiles')
+.select('id')
+.ilike('username', username)
+.limit(1);
+
+if (usernameError) {
+return message('accountMessage', 'Could not check username: ' + usernameError.message);
+}
+
+if (existingProfile && existingProfile.length > 0) {
+return message('accountMessage', 'That username is already taken.');
 }
 
 const { data, error } = await supabase.auth.signUp({
@@ -1382,19 +1399,13 @@ data: { username }
 });
 
 if (error) {
-
 return message('accountMessage', error.message);
-
 }
 
 if (data.session) {
-
 message('accountMessage', 'Account created successfully!');
-
 } else {
-
 message('accountMessage', 'Account created. Check your email if confirmation is required.');
-
 }
 
 await updateAccountUI();
@@ -1407,24 +1418,18 @@ await updateAccountUI();
 window.login = async function() {
 
 const email = document.getElementById('loginEmail').value.trim();
-
 const password = document.getElementById('loginPassword').value;
 
 const { error } = await supabase.auth.signInWithPassword({
-
 email,
 password
-
 });
 
 if (error) {
-
 return message('accountMessage', error.message);
-
 }
 
 message('accountMessage', 'Successfully logged in!');
-
 await updateAccountUI();
 
 };
@@ -1437,36 +1442,29 @@ window.logout = async function() {
 const { error } = await supabase.auth.signOut();
 
 if (error) {
-
 return message('profileMessage', error.message);
-
 }
 
 message('accountMessage', 'Logged out successfully.');
-
 await updateAccountUI();
 
 };
 
 
-/* SAVE PROFILE DESCRIPTION */
+/* SAVE DESCRIPTION */
 
 window.saveDescription = async function() {
 
 const session = await currentSession();
 
 if (!session) {
-
 return message('profileMessage', 'Please log in first.');
-
 }
 
 const description = document.getElementById('editDescription').value.trim();
 
 if (containsForbiddenContent(description)) {
-
 return message('profileMessage', 'Your description contains prohibited content.');
-
 }
 
 const { error } = await supabase
@@ -1475,9 +1473,7 @@ const { error } = await supabase
 .eq('id', session.user.id);
 
 if (error) {
-
 return message('profileMessage', error.message);
-
 }
 
 message('profileMessage', 'Profile description saved!');
@@ -1485,7 +1481,7 @@ message('profileMessage', 'Profile description saved!');
 };
 
 
-/* VIEW MEMBER PROFILE */
+/* VIEW PROFILE */
 
 window.currentProfileId = null;
 
@@ -1498,15 +1494,11 @@ window.currentProfileId = userId;
 showPage('profile');
 
 const usernameElement = document.getElementById('viewUsername');
-
 const descriptionElement = document.getElementById('viewDescription');
-
 const postsElement = document.getElementById('memberPosts');
 
 usernameElement.textContent = 'Loading profile...';
-
 descriptionElement.textContent = '';
-
 postsElement.textContent = 'Loading posts...';
 
 document.getElementById('friendActions').textContent =
@@ -1519,13 +1511,9 @@ const { data: profile, error: profileError } = await supabase
 .single();
 
 if (profileError) {
-
 usernameElement.textContent = 'Profile unavailable';
-
 descriptionElement.textContent = profileError.message;
-
 return;
-
 }
 
 usernameElement.textContent = profile.username || 'Member';
@@ -1542,25 +1530,19 @@ const { data, error } = await supabase
 .order('created_at', { ascending: false });
 
 if (error) {
-
 postsElement.textContent = 'Could not load posts: ' + error.message;
 return;
-
 }
 
 postsElement.replaceChildren();
 
 if (!data || data.length === 0) {
-
 postsElement.textContent = 'This member has not posted anything yet.';
 return;
-
 }
 
 data.forEach(post => {
-
 postsElement.appendChild(makePostElement(post));
-
 });
 
 };
@@ -1577,41 +1559,29 @@ event.preventDefault();
 const session = await currentSession();
 
 if (!session) {
-
 return message('reportMessage', 'Please log in before posting.');
-
 }
 
 const title = document.getElementById('findTitle').value.trim();
-
 const description = document.getElementById('findDescription').value.trim();
-
 const content = title + '\n' + description;
-
 const file = document.getElementById('findMedia').files[0];
 
 if (!title || !description) {
-
 return message('reportMessage', 'Complete the title and description.');
-
 }
 
 if (containsForbiddenContent(content)) {
-
 return message('reportMessage', 'Your report contains prohibited content.');
-
 }
 
 let mediaUrl = null;
-
 let mediaType = null;
-
 let uploadedPath = null;
 
 if (file) {
 
 const allowedTypes = [
-
 'image/jpeg',
 'image/png',
 'image/webp',
@@ -1619,19 +1589,14 @@ const allowedTypes = [
 'video/mp4',
 'video/webm',
 'video/quicktime'
-
 ];
 
 if (!allowedTypes.includes(file.type)) {
-
 return message('reportMessage', 'That file type is not supported.');
-
 }
 
 if (file.size > 50 * 1024 * 1024) {
-
 return message('reportMessage', 'File must be smaller than 50 MB.');
-
 }
 
 message('reportMessage', 'Uploading your photo or video...');
@@ -1644,16 +1609,12 @@ session.user.id + '/' + crypto.randomUUID() + '-' + safeName;
 const { error: uploadError } = await supabase.storage
 .from('forum-media')
 .upload(uploadedPath, file, {
-
 contentType: file.type,
 upsert: false
-
 });
 
 if (uploadError) {
-
 return message('reportMessage', 'Upload failed: ' + uploadError.message);
-
 }
 
 const { data: publicData } = supabase.storage
@@ -1661,7 +1622,6 @@ const { data: publicData } = supabase.storage
 .getPublicUrl(uploadedPath);
 
 mediaUrl = publicData.publicUrl;
-
 mediaType = file.type;
 
 }
@@ -1675,9 +1635,7 @@ const { data: profile, error: profileError } = await supabase
 if (profileError) {
 
 if (uploadedPath) {
-
 await supabase.storage.from('forum-media').remove([uploadedPath]);
-
 }
 
 return message('reportMessage', 'Could not load profile: ' + profileError.message);
@@ -1687,21 +1645,17 @@ return message('reportMessage', 'Could not load profile: ' + profileError.messag
 const { error } = await supabase
 .from('forum_posts')
 .insert({
-
 user_id: session.user.id,
 username: profile.username || 'Member',
 content,
 media_url: mediaUrl,
 media_type: mediaType
-
 });
 
 if (error) {
 
 if (uploadedPath) {
-
 await supabase.storage.from('forum-media').remove([uploadedPath]);
-
 }
 
 return message('reportMessage', 'Could not publish: ' + error.message);
@@ -1713,7 +1667,6 @@ document.getElementById('reportForm').reset();
 message('reportMessage', 'Your find has been published!');
 
 await loadPosts();
-
 showPage('forum');
 
 }
@@ -1731,7 +1684,6 @@ updateAccountUI();
 });
 
 showPage('home');
-
 await updateAccountUI();
 
 console.log('Paramytha Rocketry Division connected.');
