@@ -8,1140 +8,1021 @@
 
 <style>
 * {
-  box-sizing: border-box;
+box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  color: white;
-  background: #111;
-}
-
-button, input, textarea {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
+html, body {
+margin: 0;
+padding: 0;
+width: 100%;
+height: 100%;
+font-family: Arial, sans-serif;
+background: white;
 }
 
 .page {
-  display: none;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.page.active {
-  display: block;
+display: none;
+min-height: 100vh;
 }
 
 #home {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background:
-    linear-gradient(rgba(0,0,0,.48), rgba(0,0,0,.7)),
-    url("photo.jpg.png") center center / cover no-repeat;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+height: 100svh;
+overflow: hidden;
+position: relative;
 }
 
-.home-title {
-  text-align: center;
-  margin-bottom: 28px;
+.image-container {
+position: relative;
+height: 100%;
+width: auto;
+max-width: 100vw;
 }
 
-.home-title h1 {
-  font-size: clamp(28px, 6vw, 48px);
-  margin: 0;
-  letter-spacing: 1px;
+.image-container img {
+display: block;
+height: 100%;
+width: auto;
+max-width: 100vw;
+object-fit: contain;
 }
 
-.home-title p {
-  margin-top: 8px;
-  font-size: 14px;
-  letter-spacing: 3px;
+/* ORIGINAL BUTTON POSITION AND STYLE */
+
+.navigation {
+position: absolute;
+top: 60.4%;
+left: 4.5%;
+display: flex;
+gap: 3px;
+align-items: center;
+white-space: nowrap;
 }
 
-.home-buttons {
-  width: min(310px, 85%);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.nav-button {
+background: white;
+color: black;
+border: 2px solid #ff9900;
+border-radius: 0;
+padding: 3px 5px;
+font-size: clamp(10px, 1.6vw, 16px);
+font-weight: normal;
+cursor: pointer;
 }
 
-.main-button {
-  width: 100%;
-  padding: 13px;
-  color: black;
-  background: white;
-  border: 1px solid #e87528;
-  border-radius: 3px;
-  font-size: 16px;
-  font-weight: 600;
+.nav-button:hover {
+background: #ff9900;
+color: white;
 }
 
-.main-button:hover {
-  background: #f1f1f1;
-}
-
-.sub-title {
-  text-align: center;
-  margin-top: 22px;
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: white;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0 20px;
-  border-bottom: 1px solid #444;
-  margin-bottom: 22px;
-}
-
-.back-button {
-  background: white;
-  color: black;
-  border: 1px solid #e87528;
-  padding: 9px 15px;
-  border-radius: 3px;
-}
-
-.topbar h2 {
-  margin: 0;
-  font-size: 23px;
-}
+/* ORIGINAL OTHER PAGE STYLE */
 
 .content {
-  width: min(850px, 100%);
-  margin: 0 auto;
+max-width: 900px;
+margin: auto;
+padding: 50px 25px;
+line-height: 1.7;
 }
 
-.panel {
-  background: #202020;
-  border: 1px solid #444;
-  border-radius: 7px;
-  padding: 18px;
-  margin-bottom: 18px;
+h1 {
+color: #ff9900;
 }
 
-.panel h3 {
-  margin-top: 0;
+.back {
+margin-top: 25px;
+padding: 6px 10px;
+background: white;
+color: black;
+border: 2px solid #ff9900;
+border-radius: 0;
+cursor: pointer;
 }
 
-input, textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 7px 0 13px;
-  background: #111;
-  border: 1px solid #555;
-  border-radius: 4px;
-  color: white;
+.back:hover {
+background: #ff9900;
+color: white;
 }
 
-textarea {
-  min-height: 110px;
-  resize: vertical;
+/* ADDITIONAL FORUM AND ACCOUNT STYLES */
+
+.forum-panel {
+border: 1px solid #ddd;
+padding: 18px;
+margin: 18px 0;
+border-radius: 4px;
 }
 
-.action-button {
-  padding: 11px 17px;
-  background: white;
-  color: black;
-  border: 1px solid #e87528;
-  border-radius: 3px;
-  font-weight: bold;
+.forum-panel input,
+.forum-panel textarea {
+width: 100%;
+padding: 10px;
+margin: 6px 0 14px;
+border: 1px solid #ccc;
+font-family: Arial, sans-serif;
 }
 
-.action-button:hover {
-  background: #eee;
+.forum-panel textarea {
+min-height: 100px;
+resize: vertical;
 }
 
-.secondary-button {
-  padding: 10px 14px;
-  background: transparent;
-  color: white;
-  border: 1px solid #777;
-  border-radius: 3px;
+.feature-button {
+background: white;
+color: black;
+border: 2px solid #ff9900;
+border-radius: 0;
+padding: 7px 12px;
+cursor: pointer;
 }
 
-.status-message {
-  color: #f0a36d;
-  font-size: 14px;
-  overflow-wrap: anywhere;
+.feature-button:hover {
+background: #ff9900;
+color: white;
 }
 
-.post {
-  background: #202020;
-  border: 1px solid #444;
-  border-radius: 7px;
-  padding: 16px;
-  margin-bottom: 15px;
+.forum-post {
+border: 1px solid #ddd;
+padding: 15px;
+margin: 14px 0;
+overflow-wrap: anywhere;
 }
 
-.post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
+.forum-post p {
+white-space: pre-wrap;
+}
+
+.forum-post img,
+.forum-post video {
+display: block;
+max-width: 100%;
+max-height: 450px;
+margin-top: 12px;
 }
 
 .profile-link {
-  background: none;
-  border: none;
-  color: #f0a36d;
-  font-weight: bold;
-  padding: 0;
-  text-decoration: underline;
+border: none;
+background: none;
+padding: 0;
+color: #d97800;
+font-weight: bold;
+text-decoration: underline;
+cursor: pointer;
 }
 
 .post-date {
-  color: #aaa;
-  font-size: 12px;
+font-size: 12px;
+color: #777;
 }
 
-.post-content {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.5;
-}
-
-.post-media {
-  width: 100%;
-  max-height: 480px;
-  object-fit: contain;
-  background: #111;
-  border-radius: 5px;
-  margin-top: 12px;
-}
-
-.profile-description {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.album-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.album-grid img {
-  width: 100%;
-  border-radius: 5px;
-  border: 1px solid #555;
+.status {
+color: #b56500;
+font-size: 14px;
 }
 
 .small-note {
-  color: #aaa;
-  font-size: 12px;
-  line-height: 1.5;
+font-size: 12px;
+color: #666;
 }
 
-footer {
-  text-align: center;
-  color: #999;
-  padding: 20px;
-  font-size: 12px;
-}
-
-@media (max-width: 500px) {
-  .page {
-    padding: 13px;
-  }
-
-  .topbar h2 {
-    font-size: 20px;
-  }
+[hidden] {
+display: none !important;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HOME PAGE -->
-<section id="home" class="page active">
+<!-- HOME -->
 
-  <div class="home-title">
-    <h1>PARAMYTHA</h1>
-    <p>ROCKETRY DIVISION</p>
-  </div>
+<div id="home" class="page">
 
-  <div class="home-buttons">
-    <button class="main-button" onclick="showPage('donate')">Donate</button>
-    <button class="main-button" onclick="showPage('about')">About Us</button>
-    <button class="main-button" onclick="showPage('album')">Album</button>
-    <button class="main-button" onclick="showPage('forum'); loadPosts()">Forum</button>
-    <button class="main-button" onclick="showPage('report')">Report a Find</button>
-    <button class="main-button" onclick="showPage('account')">Account</button>
-  </div>
+<div class="image-container">
 
-  <div class="sub-title">PARAMYTHA ROCKETRY DIVISION</div>
-</section>
+<img src="photo.jpg.png" alt="Paramytha Rocketry Division">
 
+<nav class="navigation">
 
-<!-- DONATE PAGE -->
-<section id="donate" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('home')">Back</button>
-    <h2>Donate</h2>
-  </div>
+<button class="nav-button" onclick="showPage('donate')">Donate</button>
 
-  <div class="content">
-    <div class="panel">
-      <h3>Support Our Work</h3>
-      <p>
-        Your support helps us develop our rocketry projects,
-        improve our equipment and continue learning about aerospace.
-      </p>
-      <p>
-        Thank you for supporting Paramytha Rocketry Division.
-      </p>
-    </div>
-  </div>
-</section>
+<button class="nav-button" onclick="showPage('about')">About</button>
+
+<button class="nav-button" onclick="showPage('album')">Album</button>
+
+<button class="nav-button" onclick="openForum()">Forum</button>
+
+<button class="nav-button" onclick="openReport()">Report a Find</button>
+
+<button class="nav-button" onclick="openAccount()">Account</button>
+
+</nav>
+
+</div>
+</div>
 
 
-<!-- ABOUT PAGE -->
-<section id="about" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('home')">Back</button>
-    <h2>About Us</h2>
-  </div>
+<!-- DONATE -->
 
-  <div class="content">
-    <div class="panel">
-      <h3>Paramytha Rocketry Division</h3>
-      <p>
-        Paramytha Rocketry Division is a rocketry project focused on
-        learning, experimentation and aerospace development.
-      </p>
+<div id="donate" class="page">
 
-      <h3>What We Do</h3>
-      <p>
-        We work on model rocketry and explore the science behind
-        rocket propulsion, engineering and flight.
-      </p>
+<div class="content">
 
-      <p>
-        Our projects help us develop practical skills in design,
-        construction, testing and problem solving.
-      </p>
-    </div>
-  </div>
-</section>
+<h1>Donate</h1>
+
+<h2>Support Paramytha Rocketry Division</h2>
+
+<p>Help us support our interest in aerospace engineering and rocketry.</p>
+
+<p>Donation information coming soon.</p>
+
+<button class="back" onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
 
 
-<!-- ALBUM PAGE -->
-<section id="album" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('home')">Back</button>
-    <h2>Album</h2>
-  </div>
+<!-- ABOUT -->
 
-  <div class="content">
-    <div class="panel">
-      <h3>Our Projects</h3>
-      <p>Photos from our rocketry projects will appear here.</p>
+<div id="about" class="page">
 
-      <div class="album-grid">
-        <img src="photo.jpg.png" alt="Paramytha Rocketry project">
-      </div>
+<div class="content">
 
-      <p class="small-note">
-        To add more album pictures, upload them to your GitHub
-        repository and add their filenames here.
-      </p>
-    </div>
-  </div>
-</section>
+<h1>About Us</h1>
 
+<h2>Paramytha Rocketry Division</h2>
 
-<!-- FORUM PAGE -->
-<section id="forum" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('home')">Back</button>
-    <h2>Forum</h2>
-  </div>
+<p>
+Paramytha Rocketry Division is a rocketry organisation
+driven by curiosity, innovation and a passion for
+aerospace engineering.
+</p>
 
-  <div class="content">
-    <div class="panel">
-      <h3>Community Forum</h3>
-      <p>See finds and posts shared by the community.</p>
-      <button class="action-button" onclick="showPage('report')">
-        Report a Find
-      </button>
-      <button class="secondary-button" onclick="loadPosts()">
-        Refresh Posts
-      </button>
-    </div>
+<p>
+Our goal is to explore the world of rocketry through
+designing, developing and testing rocket projects.
+We believe in learning through experimentation,
+creativity and teamwork.
+</p>
 
-    <div id="posts">
-      Loading posts...
-    </div>
-  </div>
-</section>
+<button class="back" onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
 
 
-<!-- REPORT A FIND PAGE -->
-<section id="report" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('home')">Back</button>
-    <h2>Report a Find</h2>
-  </div>
+<!-- ALBUM -->
 
-  <div class="content">
-    <form id="reportForm" class="panel">
-      <h3>Share Your Find</h3>
+<div id="album" class="page">
 
-      <label for="findTitle">Title</label>
-      <input
-        id="findTitle"
-        type="text"
-        maxlength="100"
-        placeholder="Give your find a title"
-        required
-      >
+<div class="content">
 
-      <label for="findDescription">Description</label>
-      <textarea
-        id="findDescription"
-        maxlength="2000"
-        placeholder="Describe what you found..."
-        required
-      ></textarea>
+<h1>Our Album</h1>
 
-      <label for="findMedia">Add a photo or video (optional)</label>
-      <input
-        id="findMedia"
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
-      >
+<h2>Paramytha Rocketry Division</h2>
 
-      <p class="small-note">
-        Supported photos and videos. Maximum file size: 50 MB.
-      </p>
+<p>Photos of our rockets, projects and activities will appear here.</p>
 
-      <button class="action-button" type="submit">
-        Publish Find
-      </button>
+<button class="back" onclick="showPage('home')">Back to Home</button>
 
-      <p id="reportMessage" class="status-message"></p>
-    </form>
-  </div>
-</section>
+</div>
+</div>
 
 
-<!-- ACCOUNT PAGE -->
-<section id="account" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('home')">Back</button>
-    <h2>Account</h2>
-  </div>
+<!-- FORUM -->
 
-  <div class="content">
+<div id="forum" class="page">
 
-    <div class="panel" id="loggedOutPanel">
-      <h3>Create an Account</h3>
+<div class="content">
 
-      <label for="signupUsername">Username</label>
-      <input
-        id="signupUsername"
-        type="text"
-        maxlength="30"
-        placeholder="Choose a username"
-      >
+<h1>Forum</h1>
 
-      <label for="signupEmail">Email</label>
-      <input
-        id="signupEmail"
-        type="email"
-        placeholder="Your email address"
-      >
+<h2>Paramytha Rocketry Division Community</h2>
 
-      <label for="signupPassword">Password</label>
-      <input
-        id="signupPassword"
-        type="password"
-        placeholder="At least 8 characters"
-      >
+<p>See finds and posts shared by members around the world.</p>
 
-      <button class="action-button" onclick="signup()">
-        Create Account
-      </button>
+<button class="feature-button" onclick="openReport()">Report a Find</button>
 
-      <hr>
+<button class="feature-button" onclick="loadPosts()">Refresh</button>
 
-      <h3>Already Have an Account?</h3>
+<div id="posts">
+Loading posts...
+</div>
 
-      <label for="loginEmail">Email</label>
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="Your email address"
-      >
+<button class="back" onclick="showPage('home')">Back to Home</button>
 
-      <label for="loginPassword">Password</label>
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Your password"
-      >
-
-      <button class="action-button" onclick="login()">
-        Log In
-      </button>
-
-      <p id="accountMessage" class="status-message"></p>
-    </div>
-
-    <div class="panel" id="loggedInPanel" hidden>
-      <h3>Your Account</h3>
-      <p id="profileUsername"></p>
-
-      <button class="secondary-button" onclick="logout()">
-        Log Out
-      </button>
-
-      <hr>
-
-      <h3>Your Profile Description</h3>
-      <textarea
-        id="editDescription"
-        maxlength="500"
-        placeholder="Write something about yourself..."
-      ></textarea>
-
-      <button class="action-button" onclick="saveDescription()">
-        Save Description
-      </button>
-
-      <p id="profileMessage" class="status-message"></p>
-
-      <hr>
-
-      <h3>Your Forum Posts</h3>
-      <div id="myPosts">Your posts will appear here.</div>
-    </div>
-
-  </div>
-</section>
+</div>
+</div>
 
 
-<!-- OTHER MEMBER'S PROFILE PAGE -->
-<section id="profile" class="page">
-  <div class="topbar">
-    <button class="back-button" onclick="showPage('forum')">Back to Forum</button>
-    <h2>Member Profile</h2>
-  </div>
+<!-- REPORT A FIND -->
 
-  <div class="content">
-    <div class="panel">
-      <h3 id="viewUsername">Member</h3>
-      <p id="viewDescription" class="profile-description"></p>
-    </div>
+<div id="report" class="page">
 
-    <div class="panel">
-      <h3>Posts</h3>
-      <div id="memberPosts"></div>
-    </div>
-  </div>
-</section>
+<div class="content">
+
+<h1>Report a Find</h1>
+
+<h2>Share Your Find</h2>
+
+<div class="forum-panel">
+
+<form id="reportForm">
+
+<label for="findTitle">Title</label>
+
+<input
+id="findTitle"
+type="text"
+maxlength="100"
+placeholder="Give your find a title"
+required
+>
+
+<label for="findDescription">Description</label>
+
+<textarea
+id="findDescription"
+maxlength="2000"
+placeholder="Describe what you found..."
+required
+></textarea>
+
+<label for="findMedia">Photo or Video</label>
+
+<input
+id="findMedia"
+type="file"
+accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+>
+
+<p class="small-note">
+Photos and videos are optional. Maximum file size: 50 MB.
+</p>
+
+<button class="feature-button" type="submit">
+Publish Find
+</button>
+
+<p id="reportMessage" class="status"></p>
+
+</form>
+
+</div>
+
+<button class="back" onclick="openForum()">Back to Forum</button>
+
+</div>
+</div>
 
 
-<footer>
-  PARAMYTHA ROCKETRY DIVISION
-</footer>
+<!-- ACCOUNT -->
+
+<div id="account" class="page">
+
+<div class="content">
+
+<h1>Account</h1>
+
+<div id="loggedOutPanel" class="forum-panel">
+
+<h2>Create an Account</h2>
+
+<label for="signupUsername">Username</label>
+
+<input id="signupUsername" type="text" maxlength="30" placeholder="Choose a username">
+
+<label for="signupEmail">Email</label>
+
+<input id="signupEmail" type="email" placeholder="Email address">
+
+<label for="signupPassword">Password</label>
+
+<input id="signupPassword" type="password" placeholder="At least 8 characters">
+
+<button class="feature-button" onclick="signup()">Create Account</button>
+
+<hr>
+
+<h2>Log In</h2>
+
+<label for="loginEmail">Email</label>
+
+<input id="loginEmail" type="email" placeholder="Email address">
+
+<label for="loginPassword">Password</label>
+
+<input id="loginPassword" type="password" placeholder="Password">
+
+<button class="feature-button" onclick="login()">Log In</button>
+
+<p id="accountMessage" class="status"></p>
+
+</div>
 
 
-<!-- SUPABASE AND WEBSITE JAVASCRIPT -->
+<div id="loggedInPanel" class="forum-panel" hidden>
+
+<h2>Your Account</h2>
+
+<p id="profileUsername"></p>
+
+<button class="feature-button" onclick="logout()">Log Out</button>
+
+<hr>
+
+<h2>Your Profile Description</h2>
+
+<textarea
+id="editDescription"
+maxlength="500"
+placeholder="Write something about yourself..."
+></textarea>
+
+<button class="feature-button" onclick="saveDescription()">
+Save Description
+</button>
+
+<p id="profileMessage" class="status"></p>
+
+<hr>
+
+<h2>Your Forum Posts</h2>
+
+<div id="myPosts"></div>
+
+</div>
+
+<button class="back" onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
+
+
+<!-- MEMBER PROFILE -->
+
+<div id="profile" class="page">
+
+<div class="content">
+
+<h1 id="viewUsername">Member Profile</h1>
+
+<h2>About This Member</h2>
+
+<p id="viewDescription"></p>
+
+<hr>
+
+<h2>Their Forum Posts</h2>
+
+<div id="memberPosts"></div>
+
+<button class="back" onclick="openForum()">Back to Forum</button>
+
+</div>
+</div>
+
+
+<!-- SUPABASE -->
+
 <script type="module">
 
 import { createClient } from
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 
-/* PUT YOUR OWN SUPABASE DETAILS HERE */
+/* YOUR SUPABASE PROJECT DETAILS */
 
 const SUPABASE_URL = 'https://alnskbaksifcrgluqdio.supabase.co';
+
 const SUPABASE_KEY = 'sb_publishable_okNP6e1gRixHPB709F5cHA_4TdsBdEs';
 
 const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 
-/* BASIC HELPERS */
+/* PAGE NAVIGATION */
 
 window.showPage = function(pageName) {
-  document.querySelectorAll('.page').forEach(page => {
-    page.classList.remove('active');
-  });
 
-  const page = document.getElementById(pageName);
+document.querySelectorAll('.page').forEach(page => {
+page.style.display = 'none';
+});
 
-  if (page) {
-    page.classList.add('active');
-    window.scrollTo(0, 0);
-  }
+document.getElementById(pageName).style.display = 'flex';
+
+window.scrollTo(0, 0);
+
 };
 
+window.openForum = async function() {
+showPage('forum');
+await loadPosts();
+};
+
+window.openReport = function() {
+showPage('report');
+};
+
+window.openAccount = async function() {
+showPage('account');
+await updateAccountUI();
+};
+
+
+/* HELPERS */
+
 function message(id, text) {
-  const element = document.getElementById(id);
-  if (element) element.textContent = text;
-}
-
-function containsForbiddenContent(text) {
-  const blockedWords = [
-    'nigger',
-    'faggot',
-    'kys'
-  ];
-
-  const lower = text.toLowerCase();
-
-  return blockedWords.some(word =>
-    lower.includes(word)
-  );
+const element = document.getElementById(id);
+if (element) element.textContent = text;
 }
 
 async function currentSession() {
-  const { data, error } = await supabase.auth.getSession();
+const { data, error } = await supabase.auth.getSession();
 
-  if (error) {
-    console.error(error);
-    return null;
-  }
+if (error) {
+console.error(error);
+return null;
+}
 
-  return data.session;
+return data.session;
+}
+
+function containsForbiddenContent(text) {
+const blockedWords = ['nigger', 'faggot', 'kys'];
+const lower = text.toLowerCase();
+
+return blockedWords.some(word => lower.includes(word));
 }
 
 
-/* CREATE A FORUM POST ELEMENT */
+/* CREATE A POST DISPLAY */
 
 function makePostElement(post) {
-  const article = document.createElement('article');
-  article.className = 'post';
 
-  const header = document.createElement('div');
-  header.className = 'post-header';
+const article = document.createElement('article');
+article.className = 'forum-post';
 
-  const userButton = document.createElement('button');
-  userButton.className = 'profile-link';
-  userButton.textContent = post.username || 'Member';
+const header = document.createElement('div');
 
-  if (post.user_id) {
-    userButton.addEventListener('click', () => {
-      viewProfile(post.user_id);
-    });
-  } else {
-    userButton.disabled = true;
-  }
+const userButton = document.createElement('button');
+userButton.className = 'profile-link';
+userButton.textContent = post.username || 'Member';
 
-  const date = document.createElement('span');
-  date.className = 'post-date';
+if (post.user_id) {
+userButton.addEventListener('click', () => {
+viewProfile(post.user_id);
+});
+} else {
+userButton.disabled = true;
+}
 
-  date.textContent = post.created_at
-    ? new Date(post.created_at).toLocaleString()
-    : '';
+const date = document.createElement('span');
+date.className = 'post-date';
 
-  header.append(userButton, date);
-  article.appendChild(header);
+date.textContent = post.created_at
+? ' · ' + new Date(post.created_at).toLocaleString()
+: '';
 
-  const content = document.createElement('p');
-  content.className = 'post-content';
-  content.textContent = post.content || '';
+header.append(userButton, date);
+article.appendChild(header);
 
-  article.appendChild(content);
+const content = document.createElement('p');
+content.textContent = post.content || '';
+article.appendChild(content);
 
-  if (post.media_url) {
-    let media;
+if (post.media_url) {
 
-    if (post.media_type &&
-        post.media_type.startsWith('video/')) {
+let media;
 
-      media = document.createElement('video');
-      media.controls = true;
-      media.preload = 'metadata';
+if (post.media_type && post.media_type.startsWith('video/')) {
+media = document.createElement('video');
+media.controls = true;
+media.preload = 'metadata';
 
-    } else if (post.media_type &&
-               post.media_type.startsWith('image/')) {
+} else if (post.media_type && post.media_type.startsWith('image/')) {
+media = document.createElement('img');
+media.alt = 'Forum upload';
+}
 
-      media = document.createElement('img');
-      media.alt = 'Forum upload';
+if (media) {
+media.src = post.media_url;
+article.appendChild(media);
+}
 
-    }
+}
 
-    if (media) {
-      media.className = 'post-media';
-      media.src = post.media_url;
-      article.appendChild(media);
-    }
-  }
-
-  return article;
+return article;
 }
 
 
 /* LOAD FORUM POSTS */
 
 window.loadPosts = async function() {
-  const container = document.getElementById('posts');
 
-  container.textContent = 'Loading posts...';
+const container = document.getElementById('posts');
+container.textContent = 'Loading posts...';
 
-  const { data, error } = await supabase
-    .from('forum_posts')
-    .select('id, user_id, username, content, created_at, media_url, media_type')
-    .order('created_at', { ascending: false })
-    .limit(100);
+const { data, error } = await supabase
+.from('forum_posts')
+.select('id, user_id, username, content, created_at, media_url, media_type')
+.order('created_at', { ascending: false })
+.limit(100);
 
-  if (error) {
-    container.textContent =
-      'Could not load posts: ' + error.message;
-    return;
-  }
+if (error) {
+container.textContent = 'Could not load posts: ' + error.message;
+return;
+}
 
-  container.replaceChildren();
+container.replaceChildren();
 
-  if (!data || data.length === 0) {
-    container.textContent =
-      'No finds have been shared yet.';
-    return;
-  }
+if (!data || data.length === 0) {
+container.textContent = 'No finds have been shared yet.';
+return;
+}
 
-  data.forEach(post => {
-    container.appendChild(makePostElement(post));
-  });
+data.forEach(post => {
+container.appendChild(makePostElement(post));
+});
+
 };
 
 
 /* LOAD YOUR OWN POSTS */
 
 async function loadMyPosts(userId) {
-  const container = document.getElementById('myPosts');
 
-  container.textContent = 'Loading your posts...';
+const container = document.getElementById('myPosts');
+container.textContent = 'Loading your posts...';
 
-  const { data, error } = await supabase
-    .from('forum_posts')
-    .select('id, user_id, username, content, created_at, media_url, media_type')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+const { data, error } = await supabase
+.from('forum_posts')
+.select('id, user_id, username, content, created_at, media_url, media_type')
+.eq('user_id', userId)
+.order('created_at', { ascending: false });
 
-  if (error) {
-    container.textContent =
-      'Could not load your posts: ' + error.message;
-    return;
-  }
+if (error) {
+container.textContent = 'Could not load posts: ' + error.message;
+return;
+}
 
-  container.replaceChildren();
+container.replaceChildren();
 
-  if (!data || data.length === 0) {
-    container.textContent =
-      'You have not posted anything yet.';
-    return;
-  }
+if (!data || data.length === 0) {
+container.textContent = 'You have not posted anything yet.';
+return;
+}
 
-  data.forEach(post => {
-    container.appendChild(makePostElement(post));
-  });
+data.forEach(post => {
+container.appendChild(makePostElement(post));
+});
+
 }
 
 
-/* UPDATE ACCOUNT DISPLAY */
+/* ACCOUNT DISPLAY */
 
 async function updateAccountUI() {
-  const session = await currentSession();
 
-  const loggedOut = document.getElementById('loggedOutPanel');
-  const loggedIn = document.getElementById('loggedInPanel');
+const session = await currentSession();
 
-  if (!session) {
-    loggedOut.hidden = false;
-    loggedIn.hidden = true;
-    return;
-  }
+const loggedOut = document.getElementById('loggedOutPanel');
+const loggedIn = document.getElementById('loggedInPanel');
 
-  loggedOut.hidden = true;
-  loggedIn.hidden = false;
+if (!session) {
+loggedOut.hidden = false;
+loggedIn.hidden = true;
+return;
+}
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('username, description')
-    .eq('id', session.user.id)
-    .single();
+loggedOut.hidden = true;
+loggedIn.hidden = false;
 
-  if (error) {
-    message(
-      'profileMessage',
-      'Could not load your profile: ' + error.message
-    );
-    return;
-  }
+const { data: profile, error } = await supabase
+.from('profiles')
+.select('username, description')
+.eq('id', session.user.id)
+.single();
 
-  document.getElementById('profileUsername').textContent =
-    'Username: ' + (profile.username || 'Member');
+if (error) {
+message('profileMessage', 'Could not load profile: ' + error.message);
+return;
+}
 
-  document.getElementById('editDescription').value =
-    profile.description || '';
+document.getElementById('profileUsername').textContent =
+'Username: ' + (profile.username || 'Member');
 
-  await loadMyPosts(session.user.id);
+document.getElementById('editDescription').value =
+profile.description || '';
+
+await loadMyPosts(session.user.id);
+
 }
 
 
 /* SIGN UP */
 
 window.signup = async function() {
-  const username =
-    document.getElementById('signupUsername').value.trim();
 
-  const email =
-    document.getElementById('signupEmail').value.trim();
+const username = document.getElementById('signupUsername').value.trim();
+const email = document.getElementById('signupEmail').value.trim();
+const password = document.getElementById('signupPassword').value;
 
-  const password =
-    document.getElementById('signupPassword').value;
+if (!username || !email || !password) {
+return message('accountMessage', 'Complete all fields.');
+}
 
-  if (!username || !email || !password) {
-    return message('accountMessage', 'Complete all fields.');
-  }
+if (username.length > 30 || containsForbiddenContent(username)) {
+return message('accountMessage', 'Choose an appropriate username.');
+}
 
-  if (username.length > 30 ||
-      containsForbiddenContent(username)) {
-    return message('accountMessage', 'Choose an appropriate username.');
-  }
+if (password.length < 8) {
+return message('accountMessage', 'Password must be at least 8 characters.');
+}
 
-  if (password.length < 8) {
-    return message(
-      'accountMessage',
-      'Password must be at least 8 characters.'
-    );
-  }
+const { data, error } = await supabase.auth.signUp({
+email,
+password,
+options: {
+data: { username }
+}
+});
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { username }
-    }
-  });
+if (error) {
+return message('accountMessage', error.message);
+}
 
-  if (error) {
-    return message('accountMessage', error.message);
-  }
+if (data.session) {
+message('accountMessage', 'Account created successfully!');
+} else {
+message('accountMessage', 'Account created. Check your email if confirmation is required.');
+}
 
-  if (data.session) {
-    message('accountMessage', 'Account created successfully!');
-  } else {
-    message(
-      'accountMessage',
-      'Account created! Check your email if confirmation is required.'
-    );
-  }
+await updateAccountUI();
 
-  await updateAccountUI();
 };
 
 
 /* LOG IN */
 
 window.login = async function() {
-  const email =
-    document.getElementById('loginEmail').value.trim();
 
-  const password =
-    document.getElementById('loginPassword').value;
+const email = document.getElementById('loginEmail').value.trim();
+const password = document.getElementById('loginPassword').value;
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+const { error } = await supabase.auth.signInWithPassword({
+email,
+password
+});
 
-  if (error) {
-    return message('accountMessage', error.message);
-  }
+if (error) {
+return message('accountMessage', error.message);
+}
 
-  message('accountMessage', 'Successfully logged in!');
+message('accountMessage', 'Successfully logged in!');
+await updateAccountUI();
 
-  await updateAccountUI();
 };
 
 
 /* LOG OUT */
 
 window.logout = async function() {
-  const { error } = await supabase.auth.signOut();
 
-  if (error) {
-    return message('profileMessage', error.message);
-  }
+const { error } = await supabase.auth.signOut();
 
-  message('accountMessage', 'Logged out successfully.');
+if (error) {
+return message('profileMessage', error.message);
+}
 
-  await updateAccountUI();
+message('accountMessage', 'Logged out successfully.');
+await updateAccountUI();
+
 };
 
 
 /* SAVE PROFILE DESCRIPTION */
 
 window.saveDescription = async function() {
-  const session = await currentSession();
 
-  if (!session) {
-    return message('profileMessage', 'Please log in first.');
-  }
+const session = await currentSession();
 
-  const description =
-    document.getElementById('editDescription').value.trim();
+if (!session) {
+return message('profileMessage', 'Please log in first.');
+}
 
-  if (containsForbiddenContent(description)) {
-    return message(
-      'profileMessage',
-      'Your description contains prohibited content.'
-    );
-  }
+const description = document.getElementById('editDescription').value.trim();
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ description })
-    .eq('id', session.user.id);
+if (containsForbiddenContent(description)) {
+return message('profileMessage', 'Your description contains prohibited content.');
+}
 
-  if (error) {
-    return message('profileMessage', error.message);
-  }
+const { error } = await supabase
+.from('profiles')
+.update({ description })
+.eq('id', session.user.id);
 
-  message('profileMessage', 'Profile description saved!');
+if (error) {
+return message('profileMessage', error.message);
+}
+
+message('profileMessage', 'Profile description saved!');
+
 };
 
 
-/* VIEW ANOTHER MEMBER'S PROFILE */
+/* VIEW MEMBER PROFILE */
 
 window.viewProfile = async function(userId) {
-  if (!userId) return;
 
-  showPage('profile');
+if (!userId) return;
 
-  const usernameElement =
-    document.getElementById('viewUsername');
+showPage('profile');
 
-  const descriptionElement =
-    document.getElementById('viewDescription');
+const usernameElement = document.getElementById('viewUsername');
+const descriptionElement = document.getElementById('viewDescription');
+const postsElement = document.getElementById('memberPosts');
 
-  const postsElement =
-    document.getElementById('memberPosts');
+usernameElement.textContent = 'Loading profile...';
+descriptionElement.textContent = '';
+postsElement.textContent = 'Loading posts...';
 
-  usernameElement.textContent = 'Loading profile...';
-  descriptionElement.textContent = '';
-  postsElement.textContent = 'Loading posts...';
+const { data: profile, error: profileError } = await supabase
+.from('profiles')
+.select('username, description')
+.eq('id', userId)
+.single();
 
-  const { data: profile, error: profileError } =
-    await supabase
-      .from('profiles')
-      .select('username, description')
-      .eq('id', userId)
-      .single();
+if (profileError) {
+usernameElement.textContent = 'Profile unavailable';
+descriptionElement.textContent = profileError.message;
+return;
+}
 
-  if (profileError) {
-    usernameElement.textContent = 'Profile unavailable';
-    descriptionElement.textContent = profileError.message;
-    return;
-  }
+usernameElement.textContent = profile.username || 'Member';
 
-  usernameElement.textContent =
-    profile.username || 'Member';
+descriptionElement.textContent =
+profile.description || 'This member has not written a description yet.';
 
-  descriptionElement.textContent =
-    profile.description ||
-    'This member has not written a description yet.';
+const { data, error } = await supabase
+.from('forum_posts')
+.select('id, user_id, username, content, created_at, media_url, media_type')
+.eq('user_id', userId)
+.order('created_at', { ascending: false });
 
-  const { data, error } = await supabase
-    .from('forum_posts')
-    .select('id, user_id, username, content, created_at, media_url, media_type')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+if (error) {
+postsElement.textContent = 'Could not load posts: ' + error.message;
+return;
+}
 
-  if (error) {
-    postsElement.textContent =
-      'Could not load posts: ' + error.message;
-    return;
-  }
+postsElement.replaceChildren();
 
-  postsElement.replaceChildren();
+if (!data || data.length === 0) {
+postsElement.textContent = 'This member has not posted anything yet.';
+return;
+}
 
-  if (!data || data.length === 0) {
-    postsElement.textContent =
-      'This member has not posted anything yet.';
-    return;
-  }
+data.forEach(post => {
+postsElement.appendChild(makePostElement(post));
+});
 
-  data.forEach(post => {
-    postsElement.appendChild(makePostElement(post));
-  });
 };
 
 
-/* REPORT A FIND AND UPLOAD MEDIA */
+/* REPORT A FIND */
 
 document.getElementById('reportForm').addEventListener(
-  'submit',
-  async event => {
+'submit',
+async event => {
 
-    event.preventDefault();
+event.preventDefault();
 
-    const session = await currentSession();
+const session = await currentSession();
 
-    if (!session) {
-      return message(
-        'reportMessage',
-        'Please log in before reporting a find.'
-      );
-    }
+if (!session) {
+return message('reportMessage', 'Please log in before posting.');
+}
 
-    const title =
-      document.getElementById('findTitle').value.trim();
+const title = document.getElementById('findTitle').value.trim();
+const description = document.getElementById('findDescription').value.trim();
+const content = title + '\n' + description;
+const file = document.getElementById('findMedia').files[0];
 
-    const description =
-      document.getElementById('findDescription').value.trim();
+if (!title || !description) {
+return message('reportMessage', 'Complete the title and description.');
+}
 
-    const content = title + '\n' + description;
+if (containsForbiddenContent(content)) {
+return message('reportMessage', 'Your report contains prohibited content.');
+}
 
-    const file =
-      document.getElementById('findMedia').files[0];
+let mediaUrl = null;
+let mediaType = null;
+let uploadedPath = null;
 
-    if (!title || !description) {
-      return message(
-        'reportMessage',
-        'Complete the title and description.'
-      );
-    }
+if (file) {
 
-    if (containsForbiddenContent(content)) {
-      return message(
-        'reportMessage',
-        'Your report contains prohibited content.'
-      );
-    }
+const allowedTypes = [
+'image/jpeg',
+'image/png',
+'image/webp',
+'image/gif',
+'video/mp4',
+'video/webm',
+'video/quicktime'
+];
 
-    let mediaUrl = null;
-    let mediaType = null;
+if (!allowedTypes.includes(file.type)) {
+return message('reportMessage', 'That file type is not supported.');
+}
 
-    if (file) {
-      const allowedTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/webp',
-        'image/gif',
-        'video/mp4',
-        'video/webm',
-        'video/quicktime'
-      ];
+if (file.size > 50 * 1024 * 1024) {
+return message('reportMessage', 'File must be smaller than 50 MB.');
+}
 
-      if (!allowedTypes.includes(file.type)) {
-        return message(
-          'reportMessage',
-          'That file type is not supported.'
-        );
-      }
+message('reportMessage', 'Uploading your photo or video...');
 
-      if (file.size > 50 * 1024 * 1024) {
-        return message(
-          'reportMessage',
-          'Your file must be smaller than 50 MB.'
-        );
-      }
+const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
 
-      message('reportMessage', 'Uploading your photo or video...');
+uploadedPath =
+session.user.id + '/' + crypto.randomUUID() + '-' + safeName;
 
-      const safeName =
-        file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+const { error: uploadError } = await supabase.storage
+.from('forum-media')
+.upload(uploadedPath, file, {
+contentType: file.type,
+upsert: false
+});
 
-      const filePath =
-        session.user.id + '/' +
-        crypto.randomUUID() + '-' +
-        safeName;
+if (uploadError) {
+return message('reportMessage', 'Upload failed: ' + uploadError.message);
+}
 
-      const { error: uploadError } =
-        await supabase.storage
-          .from('forum-media')
-          .upload(filePath, file, {
-            contentType: file.type,
-            upsert: false
-          });
+const { data: publicData } = supabase.storage
+.from('forum-media')
+.getPublicUrl(uploadedPath);
 
-      if (uploadError) {
-        return message(
-          'reportMessage',
-          'Upload failed: ' + uploadError.message
-        );
-      }
+mediaUrl = publicData.publicUrl;
+mediaType = file.type;
 
-      const { data: publicData } =
-        supabase.storage
-          .from('forum-media')
-          .getPublicUrl(filePath);
+}
 
-      mediaUrl = publicData.publicUrl;
-      mediaType = file.type;
-    }
+const { data: profile, error: profileError } = await supabase
+.from('profiles')
+.select('username')
+.eq('id', session.user.id)
+.single();
 
-    const { data: profile, error: profileError } =
-      await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', session.user.id)
-        .single();
+if (profileError) {
+if (uploadedPath) {
+await supabase.storage.from('forum-media').remove([uploadedPath]);
+}
+return message('reportMessage', 'Could not load profile: ' + profileError.message);
+}
 
-    if (profileError) {
-      return message(
-        'reportMessage',
-        'Could not load your profile: ' + profileError.message
-      );
-    }
+const { error } = await supabase
+.from('forum_posts')
+.insert({
+user_id: session.user.id,
+username: profile.username || 'Member',
+content,
+media_url: mediaUrl,
+media_type: mediaType
+});
 
-    const { error } = await supabase
-      .from('forum_posts')
-      .insert({
-        user_id: session.user.id,
-        username: profile.username || 'Member',
-        content,
-        media_url: mediaUrl,
-        media_type: mediaType
-      });
+if (error) {
+if (uploadedPath) {
+await supabase.storage.from('forum-media').remove([uploadedPath]);
+}
+return message('reportMessage', 'Could not publish: ' + error.message);
+}
 
-    if (error) {
-      return message(
-        'reportMessage',
-        'Could not publish your find: ' + error.message
-      );
-    }
+document.getElementById('reportForm').reset();
 
-    document.getElementById('reportForm').reset();
+message('reportMessage', 'Your find has been published!');
 
-    message(
-      'reportMessage',
-      'Your find has been published!'
-    );
+await loadPosts();
 
-    await loadPosts();
-  }
+showPage('forum');
+
+}
 );
 
 
-/* START WEBSITE */
+/* START */
 
 supabase.auth.onAuthStateChange(() => {
-  updateAccountUI();
+updateAccountUI();
 });
+
+showPage('home');
 
 await updateAccountUI();
 
-console.log('Paramytha Rocketry Division loaded.');
+console.log('Paramytha Rocketry Division connected.');
 
 </script>
 
