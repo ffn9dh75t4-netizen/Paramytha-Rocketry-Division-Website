@@ -48,8 +48,6 @@ max-width: 100vw;
 object-fit: contain;
 }
 
-/* HOME BUTTONS */
-
 .navigation {
 position: absolute;
 top: 60.4%;
@@ -76,8 +74,6 @@ background: #ff9900;
 color: white;
 }
 
-/* OTHER PAGES */
-
 .content {
 max-width: 900px;
 width: 100%;
@@ -102,8 +98,6 @@ cursor: pointer;
 background: #ff9900;
 color: white;
 }
-
-/* FORUM AND ACCOUNT */
 
 .forum-panel {
 border: 1px solid #ddd;
@@ -234,8 +228,6 @@ display: flex;
 gap: 6px;
 flex-wrap: wrap;
 }
-
-/* ALBUM */
 
 #albumGallery {
 display: grid;
@@ -657,6 +649,100 @@ const lower = text.toLowerCase();
 
 return blockedWords.some(word => lower.includes(word));
 
+}
+
+
+/* EMAIL RATE LIMIT TRACKER */
+
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000;
+
+function getRateLimitKey(email) {
+    return 'pr_email_rate_limit_' + email.trim().toLowerCase();
+}
+
+function getEmailRateLimit(email) {
+
+    const key = getRateLimitKey(email);
+    const now = Date.now();
+
+    let record;
+
+    try {
+        record = JSON.parse(localStorage.getItem(key) || '{}');
+    } catch {
+        record = {};
+    }
+
+    if (!Array.isArray(record.attempts)) {
+        record.attempts = [];
+    }
+
+    record.attempts = record.attempts.filter(timestamp =>
+        typeof timestamp === 'number' &&
+        now - timestamp < RATE_LIMIT_WINDOW
+    );
+
+    if (record.blockedUntil && now >= record.blockedUntil) {
+        record.blockedUntil = null;
+        record.attempts = [];
+    }
+
+    localStorage.setItem(key, JSON.stringify(record));
+
+    return record;
+}
+
+function isEmailBlocked(email) {
+
+    const record = getEmailRateLimit(email);
+
+    return Boolean(
+        record.blockedUntil &&
+        Date.now() < record.blockedUntil
+    );
+
+}
+
+function recordEmailRateLimit(email) {
+
+    const key = getRateLimitKey(email);
+    const record = getEmailRateLimit(email);
+
+    const now = Date.now();
+
+    record.attempts.push(now);
+
+    if (record.attempts.length >= RATE_LIMIT_MAX) {
+        record.blockedUntil = now + RATE_LIMIT_WINDOW;
+    }
+
+    localStorage.setItem(key, JSON.stringify(record));
+
+    return record;
+
+}
+
+function getEmailBlockMessage(email) {
+
+    const record = getEmailRateLimit(email);
+
+    if (!record.blockedUntil) {
+        return 'Email rate limit exceeded.';
+    }
+
+    const remaining = Math.max(
+        0,
+        record.blockedUntil - Date.now()
+    );
+
+    const hours = Math.floor(remaining / (60 * 60 * 1000));
+    const minutes = Math.ceil(
+        (remaining % (60 * 60 * 1000)) / (60 * 1000)
+    );
+
+    return 'Email blocked for 24 hours after 5 email rate-limit errors. Try again in approximately ' +
+        hours + ' hours and ' + minutes + ' minutes.';
 }
 
 
@@ -1623,7 +1709,7 @@ await loadFriends(session.user.id);
 window.signup = async function() {
 
 const username = document.getElementById('signupUsername').value.trim();
-const email = document.getElementById('signupEmail').value.trim();
+const email = document.getElementById('signupEmail').value.trim().toLowerCase();
 const password = document.getElementById('signupPassword').value;
 
 if (!username || !email || !password) {
@@ -1637,6 +1723,14 @@ return message('accountMessage', 'Choose an appropriate username.');
 if (password.length < 8) {
 return message('accountMessage', 'Password must be at least 8 characters.');
 }
+
+/* CHECK WHETHER THIS EMAIL IS BLOCKED */
+
+if (isEmailBlocked(email)) {
+return message('accountMessage', getEmailBlockMessage(email));
+}
+
+/* CHECK USERNAME */
 
 const { data: existingProfile, error: usernameError } = await supabase
 .from('profiles')
@@ -1652,6 +1746,8 @@ if (existingProfile && existingProfile.length > 0) {
 return message('accountMessage', 'That username is already taken.');
 }
 
+/* CREATE ACCOUNT */
+
 const { data, error } = await supabase.auth.signUp({
 
 email,
@@ -1663,14 +1759,56 @@ data: { username }
 
 });
 
+/* HANDLE EMAIL RATE LIMIT ERROR */
+
 if (error) {
-return message('accountMessage', error.message);
+
+const errorText = error.message.toLowerCase();
+
+if (
+errorText.includes('email rate limit exceeded') ||
+errorText.includes('rate limit exceeded')
+) {
+
+const record = recordEmailRateLimit(email);
+
+if (record.blockedUntil) {
+return message(
+'accountMessage',
+getEmailBlockMessage(email)
+);
 }
 
+const remaining = RATE_LIMIT_MAX - record.attempts.length;
+
+return message(
+'accountMessage',
+'Email rate limit exceeded. ' +
+record.attempts.length +
+' of 5 occurrences. ' +
+remaining +
+' more before a 24-hour block.'
+);
+
+}
+
+return message('accountMessage', error.message);
+
+}
+
+/* SUCCESS */
+
 if (data.session) {
+
 message('accountMessage', 'Account created successfully!');
+
 } else {
-message('accountMessage', 'Account created. Check your email if confirmation is required.');
+
+message(
+'accountMessage',
+'Account created. Check your email to confirm your account.'
+);
+
 }
 
 await updateAccountUI();
