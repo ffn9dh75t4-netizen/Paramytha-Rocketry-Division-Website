@@ -275,6 +275,83 @@ text-decoration: none;
 
 .donate-button:hover { color: white; }
 
+/* AVATARS */
+
+.avatar {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+flex: none;
+overflow: hidden;
+border-radius: 50%;
+border: 2px solid #ff9900;
+background: #f5f5f5;
+object-fit: cover;
+}
+
+.avatar svg { width: 70%; height: 70%; }
+
+.avatar-sm { width: 38px; height: 38px; }
+.avatar-lg { width: 110px; height: 110px; }
+
+.nav-avatar {
+width: min(6.6cqw, 40px);
+height: min(6.6cqw, 40px);
+cursor: pointer;
+}
+
+.profile-item {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 1px;
+background: none;
+border: none;
+padding: 0 0.4em;
+cursor: pointer;
+}
+
+.profile-label {
+font-size: 10px;
+font-size: min(1.9cqw, 12px);
+color: black;
+line-height: 1;
+}
+
+.profile-item:hover .nav-avatar {
+background: #ffe3bf;
+border-color: #d97800;
+}
+
+.post-header {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.avatar-row {
+display: flex;
+align-items: center;
+gap: 18px;
+flex-wrap: wrap;
+margin: 12px 0 18px;
+}
+
+.avatar-actions {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+gap: 8px;
+}
+
+.view-profile-head {
+display: flex;
+align-items: center;
+gap: 16px;
+}
+
+.view-profile-head h1 { margin: 0; }
+
 [hidden] {
 display: none !important;
 }
@@ -298,7 +375,10 @@ display: none !important;
 <button class="nav-button" onclick="openAlbum()">Album</button>
 <button class="nav-button" onclick="openForum()">Forum</button>
 <button class="nav-button" onclick="openReport()">Report a Find</button>
-<button class="nav-button" onclick="openAccount()">Account</button>
+<button class="profile-item" onclick="openAccount()" aria-label="Profile">
+<span id="navAvatar" class="avatar nav-avatar"></span>
+<span class="profile-label">Profile</span>
+</button>
 <button class="nav-button" onclick="openFriends()">Add Friends +</button>
 
 </nav>
@@ -493,7 +573,7 @@ Photos and videos are optional. Maximum file size: 50 MB.
 <div id="account" class="page">
 <div class="content">
 
-<h1>Account</h1>
+<h1>Profile</h1>
 
 <div id="loggedOutPanel" class="forum-panel">
 
@@ -528,7 +608,17 @@ Photos and videos are optional. Maximum file size: 50 MB.
 
 <div id="loggedInPanel" class="forum-panel" hidden>
 
-<h2>Your Account</h2>
+<h2>Your Profile</h2>
+
+<div class="avatar-row">
+<div id="profileAvatar"></div>
+<div class="avatar-actions">
+<input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+<button class="feature-button" type="button" onclick="document.getElementById('avatarFile').click()">Change Profile Picture</button>
+<button class="feature-button" type="button" onclick="removeAvatar()">Remove Picture</button>
+</div>
+</div>
+
 <p id="profileUsername"></p>
 
 <button class="feature-button" onclick="logout()">Log Out</button>
@@ -601,7 +691,10 @@ oninput="searchMembers()"
 <div id="profile" class="page">
 <div class="content">
 
+<div class="view-profile-head">
+<div id="viewAvatar"></div>
 <h1 id="viewUsername">Member Profile</h1>
+</div>
 
 <div id="friendActions" class="friend-actions"></div>
 
@@ -733,6 +826,241 @@ const lower = text.toLowerCase();
 return blockedWords.some(word => lower.includes(word));
 
 }
+
+
+/* AVATARS */
+
+window.avatarMap = {};
+
+const DEFAULT_AVATAR_SVG =
+'<svg viewBox="0 0 24 24" fill="#b5b5b5" aria-hidden="true">' +
+'<circle cx="12" cy="8" r="4.5"/>' +
+'<path d="M3.5 21c0-4.7 3.8-8 8.5-8s8.5 3.3 8.5 8z"/></svg>';
+
+function fillAvatar(container, url) {
+
+container.replaceChildren();
+
+if (url) {
+
+const image = document.createElement('img');
+image.src = url;
+image.alt = 'Profile picture';
+image.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+
+image.addEventListener('error', () => {
+container.innerHTML = DEFAULT_AVATAR_SVG;
+});
+
+container.appendChild(image);
+return;
+
+}
+
+container.innerHTML = DEFAULT_AVATAR_SVG;
+
+}
+
+function avatarElement(url, sizeClass) {
+
+const holder = document.createElement('div');
+holder.className = 'avatar ' + sizeClass;
+
+fillAvatar(holder, url);
+
+return holder;
+
+}
+
+function setNavAvatar(url) {
+fillAvatar(document.getElementById('navAvatar'), url);
+}
+
+async function getAvatar(userId) {
+
+const { data, error } = await supabase
+.from('profiles')
+.select('avatar_url')
+.eq('id', userId)
+.maybeSingle();
+
+if (error) return null;
+
+return data?.avatar_url || null;
+
+}
+
+async function loadAvatars(userIds) {
+
+const ids = [...new Set(userIds.filter(Boolean))];
+
+if (ids.length === 0) return;
+
+const { data, error } = await supabase
+.from('profiles')
+.select('id, avatar_url')
+.in('id', ids);
+
+if (error || !data) return;
+
+data.forEach(row => {
+window.avatarMap[row.id] = row.avatar_url || null;
+});
+
+}
+
+function resizeToSquare(file, size) {
+
+return new Promise((resolve, reject) => {
+
+const url = URL.createObjectURL(file);
+const image = new Image();
+
+image.onload = () => {
+
+const side = Math.min(image.width, image.height);
+const canvas = document.createElement('canvas');
+
+canvas.width = size;
+canvas.height = size;
+
+canvas.getContext('2d').drawImage(
+image,
+(image.width - side) / 2,
+(image.height - side) / 2,
+side,
+side,
+0,
+0,
+size,
+size
+);
+
+URL.revokeObjectURL(url);
+
+canvas.toBlob(
+blob => blob ? resolve(blob) : reject(new Error('Could not process image.')),
+'image/jpeg',
+0.88
+);
+
+};
+
+image.onerror = () => {
+URL.revokeObjectURL(url);
+reject(new Error('Could not read that image.'));
+};
+
+image.src = url;
+
+});
+
+}
+
+async function saveAvatarUrl(userId, url) {
+
+const { error } = await supabase
+.from('profiles')
+.update({ avatar_url: url })
+.eq('id', userId);
+
+if (error) {
+
+if ((error.message || '').toLowerCase().includes('avatar_url')) {
+return 'Profile pictures are not set up yet. Add the avatar_url column in Supabase first.';
+}
+
+return error.message;
+
+}
+
+window.avatarMap[userId] = url;
+fillAvatar(document.getElementById('profileAvatar'), url);
+setNavAvatar(url);
+
+return null;
+
+}
+
+window.uploadAvatar = async function(file) {
+
+const session = await currentSession();
+
+if (!session) {
+return message('profileMessage', 'Please log in first.');
+}
+
+const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+if (!allowed.includes(file.type)) {
+return message('profileMessage', 'Choose a JPG, PNG, WebP or GIF image.');
+}
+
+if (file.size > 15 * 1024 * 1024) {
+return message('profileMessage', 'Image must be smaller than 15 MB.');
+}
+
+message('profileMessage', 'Uploading your picture...');
+
+let blob;
+
+try {
+blob = await resizeToSquare(file, 320);
+} catch (error) {
+return message('profileMessage', error.message);
+}
+
+const path = session.user.id + '/avatar-' + crypto.randomUUID() + '.jpg';
+
+const { error: uploadError } = await supabase.storage
+.from('forum-media')
+.upload(path, blob, {
+contentType: 'image/jpeg',
+upsert: false
+});
+
+if (uploadError) {
+return message('profileMessage', 'Upload failed: ' + uploadError.message);
+}
+
+const { data: publicData } = supabase.storage
+.from('forum-media')
+.getPublicUrl(path);
+
+const problem = await saveAvatarUrl(session.user.id, publicData.publicUrl);
+
+if (problem) {
+await supabase.storage.from('forum-media').remove([path]);
+return message('profileMessage', problem);
+}
+
+message('profileMessage', 'Profile picture updated!');
+
+};
+
+window.removeAvatar = async function() {
+
+const session = await currentSession();
+
+if (!session) {
+return message('profileMessage', 'Please log in first.');
+}
+
+const problem = await saveAvatarUrl(session.user.id, null);
+
+message('profileMessage', problem || 'Profile picture removed.');
+
+};
+
+document.getElementById('avatarFile').addEventListener('change', async event => {
+
+const file = event.target.files[0];
+
+event.target.value = '';
+
+if (file) await window.uploadAvatar(file);
+
+});
 
 
 /* EMAIL RATE LIMIT TRACKER */
@@ -1031,6 +1359,9 @@ const article = document.createElement('article');
 article.className = 'forum-post';
 
 const header = document.createElement('div');
+header.className = 'post-header';
+
+const who = document.createElement('div');
 const userButton = document.createElement('button');
 
 userButton.type = 'button';
@@ -1084,7 +1415,13 @@ date.textContent = post.created_at
 ? ' · ' + new Date(post.created_at).toLocaleString()
 : '';
 
-header.append(userButton, date);
+who.append(userButton, date);
+
+header.append(
+avatarElement(window.avatarMap[post.user_id], 'avatar-sm'),
+who
+);
+
 article.appendChild(header);
 
 const content = document.createElement('p');
@@ -1141,6 +1478,8 @@ container.textContent = 'No finds have been shared yet.';
 return;
 }
 
+await loadAvatars(data.map(post => post.user_id));
+
 data.forEach(post => container.appendChild(makePostElement(post)));
 
 };
@@ -1170,6 +1509,8 @@ if (!data || data.length === 0) {
 container.textContent = 'You have not posted anything yet.';
 return;
 }
+
+await loadAvatars([userId]);
 
 data.forEach(post => container.appendChild(makePostElement(post)));
 
@@ -1756,6 +2097,7 @@ if (!session) {
 
 loggedOut.hidden = false;
 loggedIn.hidden = true;
+setNavAvatar(null);
 return;
 
 }
@@ -1779,6 +2121,14 @@ document.getElementById('profileUsername').textContent =
 
 document.getElementById('editDescription').value =
 profile.description || '';
+
+const myAvatar = await getAvatar(session.user.id);
+
+window.avatarMap[session.user.id] = myAvatar;
+
+fillAvatar(document.getElementById('profileAvatar'), myAvatar);
+document.getElementById('profileAvatar').className = 'avatar avatar-lg';
+setNavAvatar(myAvatar);
 
 await loadMyPosts(session.user.id);
 await loadIncomingRequests(session.user.id);
@@ -2004,6 +2354,10 @@ return;
 
 usernameElement.textContent = profile.username || 'Member';
 
+const viewAvatar = document.getElementById('viewAvatar');
+viewAvatar.className = 'avatar avatar-lg';
+fillAvatar(viewAvatar, await getAvatar(userId));
+
 descriptionElement.textContent =
 profile.description || 'This member has not written a description yet.';
 
@@ -2026,6 +2380,8 @@ if (!data || data.length === 0) {
 postsElement.textContent = 'This member has not posted anything yet.';
 return;
 }
+
+await loadAvatars([userId]);
 
 data.forEach(post => {
 postsElement.appendChild(makePostElement(post));
