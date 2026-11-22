@@ -636,7 +636,7 @@ placeholder="Write something about yourself..."></textarea>
 <hr>
 
 <h2>Your Forum Posts</h2>
-<div id="myPosts"></div>
+<button id="viewAllPostsBtn" class="feature-button" onclick="showPage('myPostsPage')">View All Posts</button>
 
 <hr>
 
@@ -646,11 +646,41 @@ placeholder="Write something about yourself..."></textarea>
 <hr>
 
 <h2>Your Friends</h2>
-<div id="friendsList">Loading friends...</div>
+<button id="viewAllFriendsBtn" class="feature-button" onclick="showPage('myFriendsPage')">View All Friends</button>
 
 </div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
+
+
+<!-- ALL OF MY POSTS -->
+
+<div id="myPostsPage" class="page">
+<div class="content">
+
+<button class="back top-back" onclick="showPage('account')">Back to Profile</button>
+
+<h1>Your Forum Posts</h1>
+
+<div id="myPosts">Loading your posts...</div>
+
+</div>
+</div>
+
+
+<!-- ALL OF MY FRIENDS -->
+
+<div id="myFriendsPage" class="page">
+<div class="content">
+
+<button class="back top-back" onclick="showPage('account')">Back to Profile</button>
+
+<h1>Your Friends</h1>
+
+<div id="friendsList">Loading friends...</div>
 
 </div>
 </div>
@@ -1505,6 +1535,9 @@ return;
 
 container.replaceChildren();
 
+document.getElementById('viewAllPostsBtn').textContent =
+'View All Posts' + (data && data.length ? ' (' + data.length + ')' : '');
+
 if (!data || data.length === 0) {
 container.textContent = 'You have not posted anything yet.';
 return;
@@ -1814,6 +1847,9 @@ return;
 const accepted = requests.filter(request => request.status === 'accepted');
 
 container.replaceChildren();
+
+document.getElementById('viewAllFriendsBtn').textContent =
+'View All Friends' + (accepted.length ? ' (' + accepted.length + ')' : '');
 
 if (accepted.length === 0) {
 container.textContent = 'You do not have any friends yet.';
