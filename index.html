@@ -442,6 +442,8 @@ Upload Files
 
 <div id="forumBottom"></div>
 
+<button class="back" onclick="scrollToTop()">Scroll to Top</button>
+
 </div>
 </div>
 
@@ -666,6 +668,13 @@ document.getElementById(pageName).style.display = 'flex';
 
 window.scrollTo(0, 0);
 
+};
+
+window.scrollToTop = function() {
+window.scrollTo({
+top: 0,
+behavior: 'smooth'
+});
 };
 
 window.scrollToBottom = function() {
