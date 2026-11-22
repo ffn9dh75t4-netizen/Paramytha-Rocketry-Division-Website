@@ -97,6 +97,10 @@ border-radius: 0;
 cursor: pointer;
 }
 
+.top-back {
+margin: 0 0 10px;
+}
+
 .back:hover {
 background: #ff9900;
 color: white;
@@ -253,6 +257,24 @@ object-fit: contain;
 display: block;
 }
 
+.donate-list {
+margin: 10px 0 16px;
+padding-left: 22px;
+}
+
+.donate-list li { margin: 6px 0; }
+
+.donate-button {
+display: inline-block;
+margin: 6px 0 10px;
+padding: 10px 22px;
+font-size: 16px;
+color: black;
+text-decoration: none;
+}
+
+.donate-button:hover { color: white; }
+
 [hidden] {
 display: none !important;
 }
@@ -291,8 +313,34 @@ display: none !important;
 
 <h1>Donate</h1>
 <h2>Support Paramytha Rocketry Division</h2>
-<p>Help us support our interest in aerospace engineering and rocketry.</p>
-<p>Donation information coming soon.</p>
+
+<p>
+Paramytha Rocketry Division is driven by curiosity and a passion
+for aerospace engineering. Your support helps us keep designing,
+building and testing rocket projects.
+</p>
+
+<div class="forum-panel donate-panel">
+
+<h3>What your donation helps with</h3>
+
+<ul class="donate-list">
+<li>Materials and propellant ingredients for new rocket projects</li>
+<li>Testing equipment and safety gear</li>
+<li>Launch-day supplies and recording equipment</li>
+<li>Learning resources for aerospace engineering</li>
+</ul>
+
+<p>Every contribution, big or small, helps us reach new heights.</p>
+
+<a id="donateLink" class="feature-button donate-button" href="#"
+target="_blank" rel="noopener noreferrer" hidden>Donate with Revolut</a>
+
+<p id="donateNote" class="small-note">
+Revolut donation link coming soon. Thank you for your interest in supporting us.
+</p>
+
+</div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
 
@@ -380,16 +428,19 @@ Upload Files
 <div id="forum" class="page">
 <div class="content">
 
+<button class="back top-back" onclick="showPage('home')">Back to Home</button>
+
 <h1>Forum</h1>
 <h2>Paramytha Rocketry Division Community</h2>
 <p>See finds and posts shared by members around the world.</p>
 
 <button class="feature-button" onclick="openReport()">Report a Find</button>
 <button class="feature-button" onclick="loadPosts()">Refresh</button>
+<button class="feature-button" onclick="scrollToBottom()">Scroll to Bottom</button>
 
 <div id="posts">Loading posts...</div>
 
-<button class="back" onclick="showPage('home')">Back to Home</button>
+<div id="forumBottom"></div>
 
 </div>
 </div>
@@ -566,6 +617,19 @@ oninput="searchMembers()"
 </div>
 
 
+<!-- DONATE LINK: paste your Revolut link (for example https://revolut.me/yourname) between the quotes -->
+
+<script>
+const DONATE_URL = '';
+
+if (DONATE_URL) {
+const link = document.getElementById('donateLink');
+link.href = DONATE_URL;
+link.hidden = false;
+document.getElementById('donateNote').hidden = true;
+}
+</script>
+
 <!-- SUPABASE -->
 
 <script type="module">
@@ -602,6 +666,13 @@ document.getElementById(pageName).style.display = 'flex';
 
 window.scrollTo(0, 0);
 
+};
+
+window.scrollToBottom = function() {
+window.scrollTo({
+top: document.documentElement.scrollHeight,
+behavior: 'smooth'
+});
 };
 
 window.openForum = async function() {
