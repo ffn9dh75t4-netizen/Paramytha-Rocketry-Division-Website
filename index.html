@@ -352,6 +352,58 @@ gap: 16px;
 
 .view-profile-head h1 { margin: 0; }
 
+/* ADMIN AND POST EDITING */
+
+.post-actions {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+margin-top: 12px;
+}
+
+.small-btn {
+padding: 4px 10px;
+font-size: 13px;
+}
+
+.post-edit-box textarea,
+.admin-edit-box textarea,
+.admin-edit-box input {
+width: 100%;
+padding: 10px;
+margin: 6px 0;
+border: 1px solid #ccc;
+font-family: Arial, sans-serif;
+font-size: 15px;
+}
+
+.post-edit-box textarea,
+.admin-edit-box textarea {
+min-height: 100px;
+resize: vertical;
+}
+
+.post-edit-box .post-actions,
+.admin-edit-box .post-actions {
+margin-top: 6px;
+}
+
+.admin-member-info {
+display: flex;
+align-items: center;
+gap: 12px;
+min-width: 0;
+}
+
+.admin-edit-box {
+flex-basis: 100%;
+}
+
+.admin-tag {
+font-size: 11px;
+color: #777;
+}
+
 [hidden] {
 display: none !important;
 }
@@ -622,6 +674,7 @@ Photos and videos are optional. Maximum file size: 50 MB.
 <p id="profileUsername"></p>
 
 <button class="feature-button" onclick="logout()">Log Out</button>
+<button id="adminBtn" class="feature-button" onclick="openAdmin()" hidden>Admin Panel</button>
 
 <hr>
 
@@ -651,6 +704,48 @@ placeholder="Write something about yourself..."></textarea>
 </div>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
+
+
+<!-- ADMIN PANEL -->
+
+<div id="admin" class="page">
+<div class="content">
+
+<button class="back top-back" onclick="showPage('account')">Back to Profile</button>
+
+<h1>Admin Panel</h1>
+
+<h2>Members</h2>
+
+<p class="small-note">
+Edit a member's username, description or picture, or delete their account.
+</p>
+
+<input
+id="adminSearch"
+class="search-box"
+type="search"
+placeholder="Search usernames..."
+autocomplete="off"
+oninput="loadAdminMembers()"
+>
+
+<p id="adminMembersMessage" class="status"></p>
+
+<div id="adminMembers"></div>
+
+<hr>
+
+<h2>All Forum Posts</h2>
+
+<p class="small-note">Use Edit or Delete on any post.</p>
+
+<button class="feature-button" onclick="loadAdminPosts()">Refresh Posts</button>
+
+<div id="adminPosts">Loading posts...</div>
 
 </div>
 </div>
@@ -776,6 +871,28 @@ const ALBUM_BUCKET = 'album-media';
 
 function isAlbumOwner(session) {
     return session?.user?.email?.toLowerCase() === ALBUM_OWNER;
+}
+
+
+/* ADMIN
+   These checks only decide which buttons are shown.
+   The real protection is in the Supabase database rules (admin_setup.sql). */
+
+const ADMIN_EMAIL = ALBUM_OWNER;
+
+const viewer = { id: null, admin: false };
+
+function isAdmin(session) {
+    return session?.user?.email?.toLowerCase() === ADMIN_EMAIL;
+}
+
+function setViewer(session) {
+    viewer.id = session?.user?.id || null;
+    viewer.admin = isAdmin(session);
+}
+
+async function refreshViewer() {
+    setViewer(await currentSession());
 }
 
 
@@ -1381,6 +1498,151 @@ return [...(sent || []), ...(received || [])];
 }
 
 
+/* POST EDIT AND DELETE BUTTONS */
+
+function addPostActions(article, post, content) {
+
+const canEdit = viewer.admin || (viewer.id && post.user_id === viewer.id);
+
+if (!canEdit) return;
+
+const actions = document.createElement('div');
+actions.className = 'post-actions';
+
+const editButton = document.createElement('button');
+editButton.type = 'button';
+editButton.className = 'feature-button small-btn';
+editButton.textContent = 'Edit';
+actions.appendChild(editButton);
+
+if (viewer.admin) {
+
+const deleteButton = document.createElement('button');
+deleteButton.type = 'button';
+deleteButton.className = 'feature-button small-btn';
+deleteButton.textContent = 'Delete';
+
+deleteButton.addEventListener('click', async () => {
+
+if (!confirm('Delete this post permanently?')) return;
+
+deleteButton.disabled = true;
+
+const { data, error } = await supabase
+.from('forum_posts')
+.delete()
+.eq('id', post.id)
+.select('id');
+
+if (error) {
+alert('Could not delete post: ' + error.message);
+deleteButton.disabled = false;
+return;
+}
+
+if (!data || data.length === 0) {
+alert('The post was not deleted. Run admin_setup.sql in Supabase to allow admin deletes.');
+deleteButton.disabled = false;
+return;
+}
+
+article.remove();
+
+});
+
+actions.appendChild(deleteButton);
+
+}
+
+article.appendChild(actions);
+
+editButton.addEventListener('click', () => {
+
+const box = document.createElement('div');
+box.className = 'post-edit-box';
+
+const area = document.createElement('textarea');
+area.maxLength = 2000;
+area.value = post.content || '';
+
+const buttons = document.createElement('div');
+buttons.className = 'post-actions';
+
+const save = document.createElement('button');
+save.type = 'button';
+save.className = 'feature-button small-btn';
+save.textContent = 'Save';
+
+const cancel = document.createElement('button');
+cancel.type = 'button';
+cancel.className = 'feature-button small-btn';
+cancel.textContent = 'Cancel';
+
+buttons.append(save, cancel);
+
+const status = document.createElement('p');
+status.className = 'status';
+
+box.append(area, buttons, status);
+
+content.hidden = true;
+actions.hidden = true;
+content.after(box);
+
+const close = () => {
+box.remove();
+content.hidden = false;
+actions.hidden = false;
+};
+
+cancel.addEventListener('click', close);
+
+save.addEventListener('click', async () => {
+
+const text = area.value.trim();
+
+if (!text) {
+status.textContent = 'A post cannot be empty.';
+return;
+}
+
+if (containsForbiddenContent(text)) {
+status.textContent = 'Your post contains prohibited content.';
+return;
+}
+
+save.disabled = true;
+status.textContent = 'Saving...';
+
+const { data, error } = await supabase
+.from('forum_posts')
+.update({ content: text })
+.eq('id', post.id)
+.select('id');
+
+save.disabled = false;
+
+if (error) {
+status.textContent = 'Could not save: ' + error.message;
+return;
+}
+
+if (!data || data.length === 0) {
+status.textContent = 'Not saved. Run admin_setup.sql in Supabase to allow post editing.';
+return;
+}
+
+post.content = text;
+content.textContent = text;
+close();
+
+});
+
+});
+
+}
+
+
 /* CREATE POST */
 
 function makePostElement(post) {
@@ -1478,6 +1740,8 @@ article.appendChild(media);
 
 }
 
+addPostActions(article, post, content);
+
 return article;
 
 }
@@ -1508,6 +1772,7 @@ container.textContent = 'No finds have been shared yet.';
 return;
 }
 
+await refreshViewer();
 await loadAvatars(data.map(post => post.user_id));
 
 data.forEach(post => container.appendChild(makePostElement(post)));
@@ -1543,6 +1808,7 @@ container.textContent = 'You have not posted anything yet.';
 return;
 }
 
+await refreshViewer();
 await loadAvatars([userId]);
 
 data.forEach(post => container.appendChild(makePostElement(post)));
@@ -2126,6 +2392,10 @@ async function updateAccountUI() {
 
 const session = await currentSession();
 
+setViewer(session);
+
+document.getElementById('adminBtn').hidden = !viewer.admin;
+
 const loggedOut = document.getElementById('loggedOutPanel');
 const loggedIn = document.getElementById('loggedInPanel');
 
@@ -2417,6 +2687,7 @@ postsElement.textContent = 'This member has not posted anything yet.';
 return;
 }
 
+await refreshViewer();
 await loadAvatars([userId]);
 
 data.forEach(post => {
@@ -2549,6 +2820,353 @@ showPage('forum');
 
 }
 );
+
+
+/* ADMIN PANEL */
+
+window.openAdmin = async function() {
+
+await refreshViewer();
+
+if (!viewer.admin) {
+alert('Only the administrator can open this page.');
+return;
+}
+
+showPage('admin');
+
+await loadAdminMembers();
+await loadAdminPosts();
+
+};
+
+window.loadAdminPosts = async function() {
+
+await refreshViewer();
+
+const container = document.getElementById('adminPosts');
+
+if (!viewer.admin) {
+container.textContent = 'Admins only.';
+return;
+}
+
+container.textContent = 'Loading posts...';
+
+const { data, error } = await supabase
+.from('forum_posts')
+.select('id, user_id, username, content, created_at, media_url, media_type')
+.order('created_at', { ascending: false })
+.limit(100);
+
+if (error) {
+container.textContent = 'Could not load posts: ' + error.message;
+return;
+}
+
+container.replaceChildren();
+
+if (!data || data.length === 0) {
+container.textContent = 'There are no posts yet.';
+return;
+}
+
+await loadAvatars(data.map(post => post.user_id));
+
+data.forEach(post => container.appendChild(makePostElement(post)));
+
+};
+
+window.loadAdminMembers = async function() {
+
+await refreshViewer();
+
+const container = document.getElementById('adminMembers');
+const status = document.getElementById('adminMembersMessage');
+
+container.replaceChildren();
+
+if (!viewer.admin) {
+status.textContent = 'Admins only.';
+return;
+}
+
+status.textContent = 'Loading accounts...';
+
+const search = document.getElementById('adminSearch').value.trim();
+
+let query = supabase
+.from('profiles')
+.select('id, username, description')
+.order('username', { ascending: true })
+.limit(200);
+
+if (search) {
+query = query.ilike('username', '%' + search.replace(/[,%()]/g, '') + '%');
+}
+
+const { data: profiles, error } = await query;
+
+if (error) {
+status.textContent = 'Could not load accounts: ' + error.message;
+return;
+}
+
+if (!profiles || profiles.length === 0) {
+status.textContent = 'No accounts found.';
+return;
+}
+
+status.textContent = profiles.length + ' account(s).';
+
+await loadAvatars(profiles.map(profile => profile.id));
+
+profiles.forEach(profile => {
+container.appendChild(makeAdminMember(profile));
+});
+
+};
+
+function makeAdminMember(profile) {
+
+const item = document.createElement('div');
+item.className = 'member-result';
+
+const info = document.createElement('div');
+info.className = 'admin-member-info';
+
+const avatar = avatarElement(window.avatarMap[profile.id], 'avatar-sm');
+
+const text = document.createElement('div');
+
+const name = document.createElement('button');
+name.className = 'member-result-name';
+name.textContent = profile.username || 'Member';
+name.addEventListener('click', () => viewProfile(profile.id));
+
+const description = document.createElement('p');
+description.className = 'small-note';
+description.style.margin = '2px 0 0';
+description.textContent = profile.description || 'No profile description.';
+
+text.append(name, description);
+info.append(avatar, text);
+
+const actions = document.createElement('div');
+actions.className = 'member-result-actions';
+
+const edit = document.createElement('button');
+edit.className = 'feature-button small-btn';
+edit.textContent = 'Edit';
+
+const remove = document.createElement('button');
+remove.className = 'feature-button small-btn';
+remove.textContent = profile.id === viewer.id ? 'You' : 'Delete Account';
+remove.disabled = profile.id === viewer.id;
+
+actions.append(edit, remove);
+item.append(info, actions);
+
+edit.addEventListener('click', () => {
+
+const existing = item.querySelector('.admin-edit-box');
+
+if (existing) {
+existing.remove();
+return;
+}
+
+const box = document.createElement('div');
+box.className = 'admin-edit-box';
+
+const nameLabel = document.createElement('label');
+nameLabel.textContent = 'Username';
+
+const nameInput = document.createElement('input');
+nameInput.type = 'text';
+nameInput.maxLength = 30;
+nameInput.value = profile.username || '';
+
+const descLabel = document.createElement('label');
+descLabel.textContent = 'Description';
+
+const descInput = document.createElement('textarea');
+descInput.maxLength = 500;
+descInput.value = profile.description || '';
+
+const buttons = document.createElement('div');
+buttons.className = 'post-actions';
+
+const save = document.createElement('button');
+save.className = 'feature-button small-btn';
+save.textContent = 'Save';
+
+const removePicture = document.createElement('button');
+removePicture.className = 'feature-button small-btn';
+removePicture.textContent = 'Remove Picture';
+
+const cancel = document.createElement('button');
+cancel.className = 'feature-button small-btn';
+cancel.textContent = 'Cancel';
+
+buttons.append(save, removePicture, cancel);
+
+const status = document.createElement('p');
+status.className = 'status';
+
+box.append(nameLabel, nameInput, descLabel, descInput, buttons, status);
+item.appendChild(box);
+
+cancel.addEventListener('click', () => box.remove());
+
+removePicture.addEventListener('click', async () => {
+
+const { data, error } = await supabase
+.from('profiles')
+.update({ avatar_url: null })
+.eq('id', profile.id)
+.select('id');
+
+if (error) {
+status.textContent = (error.message || '').includes('avatar_url')
+? 'Profile pictures are not set up yet.'
+: 'Could not remove picture: ' + error.message;
+return;
+}
+
+if (!data || data.length === 0) {
+status.textContent = 'Not changed. Run admin_setup.sql in Supabase first.';
+return;
+}
+
+window.avatarMap[profile.id] = null;
+fillAvatar(avatar, null);
+status.textContent = 'Picture removed.';
+
+});
+
+save.addEventListener('click', async () => {
+
+const newName = nameInput.value.trim();
+const newDescription = descInput.value.trim();
+
+if (!newName || newName.length > 30) {
+status.textContent = 'Username must be 1 to 30 characters.';
+return;
+}
+
+if (containsForbiddenContent(newName) || containsForbiddenContent(newDescription)) {
+status.textContent = 'That text contains prohibited content.';
+return;
+}
+
+save.disabled = true;
+status.textContent = 'Saving...';
+
+const nameChanged =
+newName.toLowerCase() !== (profile.username || '').toLowerCase();
+
+if (nameChanged) {
+
+const { data: taken, error: takenError } = await supabase
+.from('profiles')
+.select('id')
+.ilike('username', newName)
+.neq('id', profile.id)
+.limit(1);
+
+if (takenError) {
+status.textContent = 'Could not check username: ' + takenError.message;
+save.disabled = false;
+return;
+}
+
+if (taken && taken.length > 0) {
+status.textContent = 'That username is already taken.';
+save.disabled = false;
+return;
+}
+
+}
+
+const { data, error } = await supabase
+.from('profiles')
+.update({ username: newName, description: newDescription })
+.eq('id', profile.id)
+.select('id');
+
+save.disabled = false;
+
+if (error) {
+status.textContent = 'Could not save: ' + error.message;
+return;
+}
+
+if (!data || data.length === 0) {
+status.textContent = 'Not saved. Run admin_setup.sql in Supabase to allow admin edits.';
+return;
+}
+
+let note = 'Saved.';
+
+if (nameChanged) {
+
+const { error: postsError } = await supabase
+.from('forum_posts')
+.update({ username: newName })
+.eq('user_id', profile.id);
+
+if (postsError) {
+note = 'Saved, but their old forum posts still show the old name: ' + postsError.message;
+}
+
+}
+
+profile.username = newName;
+profile.description = newDescription;
+
+name.textContent = newName;
+description.textContent = newDescription || 'No profile description.';
+
+status.textContent = note;
+
+});
+
+});
+
+remove.addEventListener('click', async () => {
+
+const label = profile.username || 'this member';
+
+if (!confirm(
+'Permanently delete the account "' + label + '" together with all of their posts and friend requests? This cannot be undone.'
+)) return;
+
+remove.disabled = true;
+
+const { error } = await supabase.rpc('admin_delete_user', { target: profile.id });
+
+if (error) {
+
+alert(
+(error.message || '').includes('admin_delete_user')
+? 'Account deletion is not set up yet. Run admin_setup.sql in Supabase first.'
+: 'Could not delete account: ' + error.message
+);
+
+remove.disabled = false;
+return;
+
+}
+
+await loadAdminMembers();
+await loadAdminPosts();
+
+});
+
+return item;
+
+}
 
 
 /* START */
