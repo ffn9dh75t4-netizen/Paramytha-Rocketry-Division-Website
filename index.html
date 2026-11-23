@@ -42,6 +42,48 @@ gap: 10px;
 width: 100%;
 }
 
+.hero-row {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+align-items: center;
+gap: 16px;
+width: 100%;
+}
+
+.wind-widget {
+width: min(92vw, 420px);
+border: 2px solid #ff9900;
+background: white;
+padding: 8px;
+}
+
+.wind-widget-label {
+display: block;
+font-size: 11px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #b56500;
+font-weight: bold;
+text-align: center;
+margin-bottom: 6px;
+}
+
+.wind-widget iframe {
+display: block;
+width: 100%;
+aspect-ratio: 4 / 3;
+border: 0;
+}
+
+.wind-widget-credit {
+display: block;
+font-size: 10px;
+color: #999;
+text-align: center;
+margin-top: 4px;
+}
+
 .image-container {
 position: relative;
 width: min(100vw, calc(100svh * 1640 / 2525));
@@ -481,6 +523,8 @@ display: none !important;
 
 <div class="home-wrap">
 
+<div class="hero-row">
+
 <div class="image-container">
 
 <img src="photo.jpg.png" alt="Paramytha Rocketry Division">
@@ -499,6 +543,16 @@ display: none !important;
 <button class="nav-button" onclick="openFriends()">Add Friends +</button>
 
 </nav>
+</div>
+
+<div class="wind-widget">
+<span class="wind-widget-label">Live Wind Map &mdash; Cyprus</span>
+<iframe
+src="https://embed.windy.com/embed2.html?lat=35.1264&lon=33.4299&detailLat=35.1264&detailLon=33.4299&width=650&height=450&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+loading="lazy" title="Live wind map of Cyprus"></iframe>
+<span class="wind-widget-credit">Map data from windy.com</span>
+</div>
+
 </div>
 
 <div>
