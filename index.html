@@ -975,6 +975,66 @@ return blockedWords.some(word => lower.includes(word));
 }
 
 
+/* IMAGE COMPRESSION
+   Shrinks photos before upload so the free storage lasts longer.
+   Videos and GIFs are left as they are. */
+
+const MAX_IMAGE_SIDE = 1920;
+const MIN_COMPRESS_BYTES = 300 * 1024;
+
+async function prepareUpload(file) {
+
+const original = { blob: file, type: file.type, name: file.name };
+
+if (
+!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+file.size < MIN_COMPRESS_BYTES
+) {
+return original;
+}
+
+try {
+
+const bitmap = await createImageBitmap(file);
+
+const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
+const width = Math.max(1, Math.round(bitmap.width * scale));
+const height = Math.max(1, Math.round(bitmap.height * scale));
+
+const canvas = document.createElement('canvas');
+canvas.width = width;
+canvas.height = height;
+
+const context = canvas.getContext('2d');
+
+context.fillStyle = '#ffffff';
+context.fillRect(0, 0, width, height);
+context.drawImage(bitmap, 0, 0, width, height);
+
+if (bitmap.close) bitmap.close();
+
+const blob = await new Promise(resolve =>
+canvas.toBlob(resolve, 'image/jpeg', 0.82)
+);
+
+if (!blob || blob.size >= file.size) return original;
+
+return {
+blob,
+type: 'image/jpeg',
+name: file.name.replace(/\.[^.]+$/, '') + '.jpg'
+};
+
+} catch (error) {
+
+console.error('Could not compress image:', error);
+return original;
+
+}
+
+}
+
+
 /* AVATARS */
 
 window.avatarMap = {};
@@ -1441,15 +1501,17 @@ message(
 'Uploading ' + (i + 1) + ' of ' + files.length + ': ' + file.name
 );
 
-const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+const prepared = await prepareUpload(file);
+
+const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '_');
 
 const path =
 'album/' + crypto.randomUUID() + '-' + safeName;
 
 const { error } = await supabase.storage
 .from(ALBUM_BUCKET)
-.upload(path, file, {
-contentType: file.type,
+.upload(path, prepared.blob, {
+contentType: prepared.type,
 upsert: false
 });
 
@@ -2750,15 +2812,17 @@ return message('reportMessage', 'File must be smaller than 50 MB.');
 
 message('reportMessage', 'Uploading your photo or video...');
 
-const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+const prepared = await prepareUpload(file);
+
+const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '_');
 
 uploadedPath =
 session.user.id + '/' + crypto.randomUUID() + '-' + safeName;
 
 const { error: uploadError } = await supabase.storage
 .from('forum-media')
-.upload(uploadedPath, file, {
-contentType: file.type,
+.upload(uploadedPath, prepared.blob, {
+contentType: prepared.type,
 upsert: false
 });
 
@@ -2771,7 +2835,7 @@ const { data: publicData } = supabase.storage
 .getPublicUrl(uploadedPath);
 
 mediaUrl = publicData.publicUrl;
-mediaType = file.type;
+mediaType = prepared.type;
 
 }
 
