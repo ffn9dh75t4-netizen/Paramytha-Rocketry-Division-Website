@@ -27,10 +27,19 @@ min-height: 100vh;
 display: flex;
 justify-content: center;
 align-items: center;
-height: 100vh;
-height: 100svh;
-overflow: hidden;
+min-height: 100vh;
+min-height: 100svh;
+overflow: visible;
 position: relative;
+padding-block: 14px;
+}
+
+.home-wrap {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 10px;
+width: 100%;
 }
 
 .image-container {
@@ -404,6 +413,61 @@ font-size: 11px;
 color: #777;
 }
 
+/* HOME PAGE ADVERTISEMENT */
+
+.home-ad {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 4px;
+text-align: center;
+width: 92%;
+max-width: min(100vw, calc(100svh * 1640 / 2525));
+padding: 10px 16px;
+border: 2px solid #ff9900;
+background: #fff8ef;
+color: black;
+text-decoration: none;
+font-size: 14px;
+line-height: 1.4;
+}
+
+.home-ad:hover { background: #ffe3bf; }
+
+.home-ad-label {
+font-size: 10px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: #b56500;
+font-weight: bold;
+}
+
+
+/* USERNAME EDITING */
+
+.username-row {
+display: flex;
+align-items: center;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.username-edit-box {
+display: flex;
+flex-direction: column;
+gap: 6px;
+margin: 8px 0 4px;
+max-width: 320px;
+}
+
+.username-edit-box input {
+padding: 10px;
+border: 1px solid #ccc;
+font-family: Arial, sans-serif;
+font-size: 15px;
+}
+
+
 [hidden] {
 display: none !important;
 }
@@ -415,6 +479,8 @@ display: none !important;
 <!-- HOME -->
 
 <div id="home" class="page">
+
+<div class="home-wrap">
 
 <div class="image-container">
 
@@ -434,6 +500,17 @@ display: none !important;
 <button class="nav-button" onclick="openFriends()">Add Friends +</button>
 
 </nav>
+</div>
+
+<a class="home-ad" href="https://fishing-website.onrender.com/"
+target="_blank" rel="noopener noreferrer sponsored">
+<span class="home-ad-label">Advertisement</span>
+<span class="home-ad-text">
+🎣 Into fishing too? Try <strong>Fishing Feed</strong> — find fish near
+you, report your catches, and run tournaments with friends.
+</span>
+</a>
+
 </div>
 </div>
 
@@ -671,7 +748,24 @@ Photos and videos are optional. Maximum file size: 50 MB.
 </div>
 </div>
 
+<div class="username-row">
 <p id="profileUsername"></p>
+<button class="feature-button small-btn" type="button" onclick="toggleUsernameEdit()">Change Username</button>
+</div>
+
+<div id="usernameEditBox" class="username-edit-box" hidden>
+
+<label for="newUsername">New username</label>
+<input id="newUsername" type="text" maxlength="30" placeholder="Choose a username">
+
+<div class="post-actions">
+<button class="feature-button small-btn" type="button" onclick="saveUsername()">Save</button>
+<button class="feature-button small-btn" type="button" onclick="toggleUsernameEdit(false)">Cancel</button>
+</div>
+
+<p id="usernameMessage" class="status"></p>
+
+</div>
 
 <button class="feature-button" onclick="logout()">Log Out</button>
 <button id="adminBtn" class="feature-button" onclick="openAdmin()" hidden>Admin Panel</button>
@@ -2829,6 +2923,110 @@ return message('profileMessage', error.message);
 }
 
 message('profileMessage', 'Profile description saved!');
+
+};
+
+
+/* CHANGE USERNAME */
+
+window.toggleUsernameEdit = function(show) {
+
+const box = document.getElementById('usernameEditBox');
+const shouldShow = show === undefined ? box.hidden : show;
+
+box.hidden = !shouldShow;
+
+if (shouldShow) {
+
+const current = document.getElementById('profileUsername').textContent
+.replace(/^Username:\s*/, '');
+
+document.getElementById('newUsername').value = current;
+message('usernameMessage', '');
+document.getElementById('newUsername').focus();
+
+}
+
+};
+
+window.saveUsername = async function() {
+
+const session = await currentSession();
+
+if (!session) {
+return message('usernameMessage', 'Please log in first.');
+}
+
+const newName = document.getElementById('newUsername').value.trim();
+
+if (!newName || newName.length > 30) {
+return message('usernameMessage', 'Username must be 1 to 30 characters.');
+}
+
+if (containsForbiddenContent(newName)) {
+return message('usernameMessage', 'Choose an appropriate username.');
+}
+
+const { data: profile, error: profileError } = await supabase
+.from('profiles')
+.select('username')
+.eq('id', session.user.id)
+.single();
+
+if (profileError) {
+return message('usernameMessage', 'Could not load your profile: ' + profileError.message);
+}
+
+const currentName = profile.username || '';
+
+if (newName.toLowerCase() === currentName.toLowerCase()) {
+toggleUsernameEdit(false);
+return;
+}
+
+message('usernameMessage', 'Checking that name...');
+
+const { data: taken, error: takenError } = await supabase
+.from('profiles')
+.select('id')
+.ilike('username', newName)
+.neq('id', session.user.id)
+.limit(1);
+
+if (takenError) {
+return message('usernameMessage', 'Could not check that name: ' + takenError.message);
+}
+
+if (taken && taken.length > 0) {
+return message('usernameMessage', 'That username is already taken.');
+}
+
+message('usernameMessage', 'Saving...');
+
+const { error } = await supabase
+.from('profiles')
+.update({ username: newName })
+.eq('id', session.user.id);
+
+if (error) {
+return message('usernameMessage', 'Could not save: ' + error.message);
+}
+
+const { error: postsError } = await supabase
+.from('forum_posts')
+.update({ username: newName })
+.eq('user_id', session.user.id);
+
+document.getElementById('profileUsername').textContent = 'Username: ' + newName;
+
+message(
+'usernameMessage',
+postsError
+? 'Username saved, but your old posts still show the old name: ' + postsError.message
+: 'Username updated!'
+);
+
+toggleUsernameEdit(false);
 
 };
 
