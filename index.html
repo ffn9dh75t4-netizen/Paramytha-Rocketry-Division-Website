@@ -1035,6 +1035,108 @@ return original;
 }
 
 
+/* BACKBLAZE UPLOADS
+   Photos and videos go to Backblaze B2 through the b2-presign Supabase function,
+   which keeps the Backblaze key secret. If that function is not set up yet,
+   uploads fall back to Supabase storage so the site keeps working. */
+
+const USE_BACKBLAZE = true;
+
+async function readFunctionError(error) {
+
+try {
+const body = await error.context.json();
+if (body?.error) return body.error;
+} catch (e) {}
+
+return error.message || 'Upload service error.';
+
+}
+
+function functionIsMissing(error) {
+
+return (
+error?.name === 'FunctionsRelayError' ||
+(error?.name === 'FunctionsHttpError' && error.context?.status === 404) ||
+(error?.name === 'FunctionsFetchError')
+);
+
+}
+
+// Returns { url, supabasePath } where supabasePath is set only for the Supabase fallback.
+async function storeMedia(kind, prepared, session) {
+
+if (USE_BACKBLAZE) {
+
+const { data, error } = await supabase.functions.invoke('b2-presign', {
+body: {
+kind,
+name: prepared.name,
+type: prepared.type,
+size: prepared.blob.size
+}
+});
+
+if (!error && data?.uploadUrl) {
+
+let response;
+
+try {
+response = await fetch(data.uploadUrl, {
+method: 'PUT',
+headers: { 'Content-Type': prepared.type },
+body: prepared.blob
+});
+} catch (networkError) {
+throw new Error(
+'Could not reach Backblaze. Check the bucket CORS rule. (' +
+networkError.message + ')'
+);
+}
+
+if (!response.ok) {
+throw new Error('Backblaze rejected the upload (error ' + response.status + ').');
+}
+
+return { url: data.publicUrl, supabasePath: null };
+
+}
+
+if (!functionIsMissing(error)) {
+throw new Error(await readFunctionError(error));
+}
+
+console.warn('b2-presign is not available, using Supabase storage instead.');
+
+}
+
+const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+const bucket = kind === 'album' ? ALBUM_BUCKET : 'forum-media';
+
+const path =
+kind === 'album'
+? 'album/' + crypto.randomUUID() + '-' + safeName
+: session.user.id + '/' + crypto.randomUUID() + '-' + safeName;
+
+const { error: uploadError } = await supabase.storage
+.from(bucket)
+.upload(path, prepared.blob, {
+contentType: prepared.type,
+upsert: false
+});
+
+if (uploadError) throw new Error(uploadError.message);
+
+const { data: publicData } = supabase.storage
+.from(bucket)
+.getPublicUrl(path);
+
+return { url: publicData.publicUrl, supabasePath: path };
+
+}
+
+
 /* AVATARS */
 
 window.avatarMap = {};
@@ -1382,6 +1484,31 @@ uploadPanel.hidden = !isAlbumOwner(session);
 
 gallery.textContent = 'Loading album...';
 
+const entries = [];
+
+/* Backblaze items, listed in the album_items table */
+
+const { data: b2Items, error: b2Error } = await supabase
+.from('album_items')
+.select('url, name, content_type, created_at')
+.order('created_at', { ascending: false })
+.limit(200);
+
+if (b2Error) {
+console.warn('album_items not available:', b2Error.message);
+}
+
+(b2Items || []).forEach(row => {
+entries.push({
+url: row.url,
+isVideo: (row.content_type || '').startsWith('video/') ||
+/\.(mp4|webm|mov)$/i.test(row.name || ''),
+time: row.created_at ? new Date(row.created_at).getTime() : 0
+});
+});
+
+/* Older files that are still in Supabase storage */
+
 const { data, error } = await supabase.storage
 .from(ALBUM_BUCKET)
 .list('album', {
@@ -1392,37 +1519,43 @@ const { data, error } = await supabase.storage
     }
 });
 
-if (error) {
+if (error && entries.length === 0) {
 gallery.textContent = 'Could not load album: ' + error.message;
 return;
 }
 
+(data || []).filter(file => file.name).forEach(file => {
+
+const { data: publicData } = supabase.storage
+.from(ALBUM_BUCKET)
+.getPublicUrl('album/' + file.name);
+
+entries.push({
+url: publicData.publicUrl,
+isVideo: /\.(mp4|webm|mov)$/i.test(file.name),
+time: file.created_at ? new Date(file.created_at).getTime() : 0
+});
+
+});
+
 gallery.replaceChildren();
 
-const files = (data || []).filter(file => file.name);
-
-if (files.length === 0) {
+if (entries.length === 0) {
 gallery.textContent = 'No photos or videos have been uploaded yet.';
 return;
 }
 
-files.forEach(file => {
+entries.sort((first, second) => second.time - first.time);
 
-const path = 'album/' + file.name;
-
-const { data: publicData } = supabase.storage
-.from(ALBUM_BUCKET)
-.getPublicUrl(path);
+entries.forEach(entry => {
 
 const item = document.createElement('div');
 item.className = 'album-item';
 
-const url = publicData.publicUrl;
-
-if (/\.(mp4|webm|mov)$/i.test(file.name)) {
+if (entry.isVideo) {
 
 const video = document.createElement('video');
-video.src = url;
+video.src = entry.url;
 video.controls = true;
 video.preload = 'metadata';
 
@@ -1431,7 +1564,7 @@ item.appendChild(video);
 } else {
 
 const image = document.createElement('img');
-image.src = url;
+image.src = entry.url;
 image.alt = 'Paramytha Rocketry Division album photo';
 image.loading = 'lazy';
 
@@ -1503,22 +1636,37 @@ message(
 
 const prepared = await prepareUpload(file);
 
-const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+let stored;
 
-const path =
-'album/' + crypto.randomUUID() + '-' + safeName;
-
-const { error } = await supabase.storage
-.from(ALBUM_BUCKET)
-.upload(path, prepared.blob, {
-contentType: prepared.type,
-upsert: false
-});
-
-if (error) {
-message('albumMessage', 'Upload failed: ' + error.message);
+try {
+stored = await storeMedia('album', prepared, session);
+} catch (uploadError) {
+message('albumMessage', 'Upload failed: ' + uploadError.message);
 submitButton.disabled = false;
 return;
+}
+
+if (!stored.supabasePath) {
+
+const { error: listError } = await supabase
+.from('album_items')
+.insert({
+url: stored.url,
+name: prepared.name,
+content_type: prepared.type
+});
+
+if (listError) {
+message(
+'albumMessage',
+'The file uploaded but could not be added to the album list: ' +
+listError.message +
+' (run backblaze_setup.sql in Supabase)'
+);
+submitButton.disabled = false;
+return;
+}
+
 }
 
 }
@@ -2814,27 +2962,17 @@ message('reportMessage', 'Uploading your photo or video...');
 
 const prepared = await prepareUpload(file);
 
-const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+let stored;
 
-uploadedPath =
-session.user.id + '/' + crypto.randomUUID() + '-' + safeName;
-
-const { error: uploadError } = await supabase.storage
-.from('forum-media')
-.upload(uploadedPath, prepared.blob, {
-contentType: prepared.type,
-upsert: false
-});
-
-if (uploadError) {
+try {
+stored = await storeMedia('forum', prepared, session);
+} catch (uploadError) {
 return message('reportMessage', 'Upload failed: ' + uploadError.message);
 }
 
-const { data: publicData } = supabase.storage
-.from('forum-media')
-.getPublicUrl(uploadedPath);
+uploadedPath = stored.supabasePath;
 
-mediaUrl = publicData.publicUrl;
+mediaUrl = stored.url;
 mediaType = prepared.type;
 
 }
