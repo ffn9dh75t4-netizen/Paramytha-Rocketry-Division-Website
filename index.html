@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paramytha Rocketry Division</title>
+<title>RPL — Rocket Propulsion Laboratories</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -22,71 +22,32 @@ display: none;
 min-height: 100vh;
 }
 
+/* ========== HOME PAGE ========== */
+
 #home {
 display: flex;
-justify-content: center;
+flex-direction: column;
 align-items: center;
 min-height: 100vh;
 min-height: 100svh;
-overflow: visible;
-position: relative;
-padding-block: 14px;
+background: #000;
+padding: 0 0 40px;
+overflow-x: hidden;
 }
 
 .home-wrap {
 display: flex;
 flex-direction: column;
 align-items: center;
-gap: 10px;
 width: 100%;
+max-width: 920px;
 }
 
-.hero-row {
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
-align-items: center;
-gap: 16px;
-width: 100%;
-}
-
-.wind-widget {
-width: min(92vw, 420px);
-border: 2px solid #e11d2e;
-background: white;
-padding: 8px;
-}
-
-.wind-widget-label {
-display: block;
-font-size: 11px;
-letter-spacing: 0.06em;
-text-transform: uppercase;
-color: #b56500;
-font-weight: bold;
-text-align: center;
-margin-bottom: 6px;
-}
-
-.wind-widget iframe {
-display: block;
-width: 100%;
-aspect-ratio: 4 / 3;
-border: 0;
-}
-
-.wind-widget-credit {
-display: block;
-font-size: 10px;
-color: #999;
-text-align: center;
-margin-top: 4px;
-}
-
+/* Logo + text image (contains logo + About Us + What We Do) */
 .image-container {
 position: relative;
-width: min(100vw, calc(100svh * 1640 / 2525));
-aspect-ratio: 1640 / 2525;
+width: min(100vw, 820px);
+aspect-ratio: 1640 / 2333;
 container-type: inline-size;
 }
 
@@ -94,38 +55,142 @@ container-type: inline-size;
 display: block;
 width: 100%;
 height: 100%;
+object-fit: cover;
+object-position: top center;
 }
 
+/* Buttons sit under the logo and above the About Us text */
 .navigation {
 position: absolute;
-top: 76%;
+top: 11.5%;
 left: 50%;
-transform: translate(-50%, -50%);
-width: 96%;
+transform: translateX(-50%);
+width: 94%;
 display: flex;
 flex-wrap: wrap;
 justify-content: center;
-gap: 3px;
+gap: 6px;
 align-items: center;
+z-index: 5;
 }
 
 .nav-button {
-background: white;
-color: black;
+background: rgba(0,0,0,0.75);
+color: #ff2a2a;
 border: 2px solid #e11d2e;
 border-radius: 0;
-padding: 0.3em 0.5em;
-font-size: 10px;
-font-size: min(2.35cqw, 16px);
-font-weight: normal;
+padding: 0.35em 0.65em;
+font-size: min(2.4cqw, 15px);
+font-weight: 600;
 white-space: nowrap;
 cursor: pointer;
+letter-spacing: 0.02em;
+transition: background 0.15s, color 0.15s;
 }
 
 .nav-button:hover {
 background: #e11d2e;
-color: white;
+color: #fff;
 }
+
+.profile-item {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 2px;
+background: none;
+border: none;
+padding: 0 0.4em;
+cursor: pointer;
+}
+
+.profile-label {
+font-size: min(1.8cqw, 11px);
+color: #ff2a2a;
+line-height: 1;
+font-weight: 600;
+}
+
+.profile-item:hover .nav-avatar {
+background: #3a1014;
+border-color: #ff2a2a;
+}
+
+/* Wind map – sits between the image texts and the advertisement */
+.wind-section {
+width: min(92vw, 820px);
+margin: 28px auto 0;
+padding: 0 8px;
+}
+
+.wind-widget {
+width: 100%;
+border: 2px solid #e11d2e;
+background: #111;
+padding: 10px;
+}
+
+.wind-widget-label {
+display: block;
+font-size: 12px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: #ff2a2a;
+font-weight: bold;
+text-align: center;
+margin-bottom: 8px;
+}
+
+.wind-widget iframe {
+display: block;
+width: 100%;
+aspect-ratio: 4 / 3;
+border: 0;
+background: #000;
+}
+
+.wind-widget-credit {
+display: block;
+font-size: 10px;
+color: #888;
+text-align: center;
+margin-top: 6px;
+}
+
+/* Advertisement at the very bottom */
+.ad-section {
+width: min(92vw, 820px);
+margin: 32px auto 0;
+padding: 0 8px;
+text-align: center;
+}
+
+.home-ad-label {
+display: block;
+font-size: 10px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: #777;
+text-align: center;
+margin-bottom: 6px;
+}
+
+.home-ad {
+display: block;
+width: 100%;
+border: 2px solid #4a6cf7;
+line-height: 0;
+}
+
+.home-ad img {
+display: block;
+width: 100%;
+height: auto;
+}
+
+.home-ad:hover { opacity: 0.9; }
+
+/* ========== SHARED / OTHER PAGES ========== */
 
 .content {
 max-width: 900px;
@@ -350,29 +415,6 @@ height: min(6.6cqw, 40px);
 cursor: pointer;
 }
 
-.profile-item {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 1px;
-background: none;
-border: none;
-padding: 0 0.4em;
-cursor: pointer;
-}
-
-.profile-label {
-font-size: 10px;
-font-size: min(1.9cqw, 12px);
-color: black;
-line-height: 1;
-}
-
-.profile-item:hover .nav-avatar {
-background: #ffd9dc;
-border-color: #b3121f;
-}
-
 .post-header {
 display: flex;
 align-items: center;
@@ -454,35 +496,6 @@ font-size: 11px;
 color: #777;
 }
 
-/* HOME PAGE ADVERTISEMENT */
-
-.home-ad {
-display: block;
-width: 92%;
-max-width: min(100vw, calc(100svh * 1640 / 2525));
-border: 2px solid #4a6cf7;
-line-height: 0;
-}
-
-.home-ad img {
-display: block;
-width: 100%;
-height: auto;
-}
-
-.home-ad:hover { opacity: 0.92; }
-
-.home-ad-label {
-display: block;
-font-size: 10px;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-color: #777;
-text-align: center;
-margin-bottom: 4px;
-}
-
-
 /* USERNAME EDITING */
 
 .username-row {
@@ -507,7 +520,6 @@ font-family: Arial, sans-serif;
 font-size: 15px;
 }
 
-
 [hidden] {
 display: none !important;
 }
@@ -522,14 +534,11 @@ display: none !important;
 
 <div class="home-wrap">
 
-<div class="hero-row">
-
+<!-- Logo + About Us + What We Do image -->
 <div class="image-container">
-
-<img src="photo.jpg.png" alt="Paramytha Rocketry Division">
+<img src="rpl-logo.png" alt="RPL Rocket Propulsion Laboratories">
 
 <nav class="navigation">
-
 <button class="nav-button" onclick="showPage('donate')">Donate</button>
 <button class="nav-button" onclick="showPage('about')">About</button>
 <button class="nav-button" onclick="openAlbum()">Album</button>
@@ -540,21 +549,22 @@ display: none !important;
 <span class="profile-label">Profile</span>
 </button>
 <button class="nav-button" onclick="openFriends()">Add Friends +</button>
-
 </nav>
 </div>
 
+<!-- Wind map between the texts (in the image) and the advertisement -->
+<div class="wind-section">
 <div class="wind-widget">
-<span class="wind-widget-label">Live Wind Map &mdash; Cyprus</span>
+<span class="wind-widget-label">Live Wind Map — Cyprus</span>
 <iframe
 src="https://embed.windy.com/embed2.html?lat=35.1264&lon=33.4299&detailLat=35.1264&detailLon=33.4299&width=650&height=450&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
 loading="lazy" title="Live wind map of Cyprus"></iframe>
 <span class="wind-widget-credit">Map data from windy.com</span>
 </div>
-
 </div>
 
-<div>
+<!-- Advertisement at the bottom -->
+<div class="ad-section">
 <span class="home-ad-label">Advertisement</span>
 <a class="home-ad" href="https://fishing-website.onrender.com/"
 target="_blank" rel="noopener noreferrer sponsored">
@@ -572,12 +582,11 @@ target="_blank" rel="noopener noreferrer sponsored">
 <div class="content">
 
 <h1>Donate</h1>
-<h2>Support Paramytha Rocketry Division</h2>
+<h2>Support Rocket Propulsion Laboratories</h2>
 
 <p>
-Paramytha Rocketry Division is driven by curiosity and a passion
-for aerospace engineering. Your support helps us keep designing,
-building and testing rocket projects.
+RPL is driven by curiosity and a passion for aerospace engineering.
+Your support helps us keep designing, building and testing rocket projects.
 </p>
 
 <div class="forum-panel donate-panel">
@@ -614,20 +623,28 @@ Revolut donation link coming soon. Thank you for your interest in supporting us.
 <div class="content">
 
 <h1>About Us</h1>
-<h2>Paramytha Rocketry Division</h2>
+<h2>Rocket Propulsion Laboratories (RPL)</h2>
 
 <p>
-Paramytha Rocketry Division is a rocketry organisation
-driven by curiosity, innovation and a passion for
-aerospace engineering.
+Rocket Propulsion Laboratories (RPL) is an independent rocketry initiative
+driven by curiosity, engineering and a passion for aerospace.
+We aim to explore the science behind rockets, develop practical skills
+and gain a deeper understanding of how things work beyond the ground.
 </p>
 
 <p>
-Our goal is to explore the world of rocketry through
-designing, developing and testing rocket projects.
-We believe in learning through experimentation,
-creativity and teamwork.
+At RPL, we design, build and develop model rockets, investigate different
+propulsion concepts and study the engineering behind rocket flight.
+Our projects include researching rocket designs, constructing airframes,
+examining propulsion technologies, testing components and documenting our results.
 </p>
+
+<p>
+We also share our projects, experiments and discoveries,
+giving others an insight into our work and the science behind rocketry.
+</p>
+
+<p><strong>Research. Design. Build. Launch.</strong></p>
 
 <button class="back" onclick="showPage('home')">Back to Home</button>
 
@@ -641,7 +658,7 @@ creativity and teamwork.
 <div class="content">
 
 <h1>Our Album</h1>
-<h2>Paramytha Rocketry Division</h2>
+<h2>Rocket Propulsion Laboratories</h2>
 
 <p>Photos and videos of our rockets, projects and activities.</p>
 
@@ -691,7 +708,7 @@ Upload Files
 <button class="back top-back" onclick="showPage('home')">Back to Home</button>
 
 <h1>Forum</h1>
-<h2>Paramytha Rocketry Division Community</h2>
+<h2>RPL Community</h2>
 <p>See finds and posts shared by members around the world.</p>
 
 <button class="feature-button" onclick="openReport()">Report a Find</button>
@@ -937,7 +954,7 @@ oninput="loadAdminMembers()"
 
 <h2>Find Members</h2>
 
-<p>Search for other Paramytha Rocketry Division members.</p>
+<p>Search for other RPL members.</p>
 
 <input
 id="memberSearch"
@@ -1710,7 +1727,7 @@ item.appendChild(video);
 
 const image = document.createElement('img');
 image.src = entry.url;
-image.alt = 'Paramytha Rocketry Division album photo';
+image.alt = 'RPL album photo';
 image.loading = 'lazy';
 
 item.appendChild(image);
@@ -3633,7 +3650,7 @@ updateAccountUI();
 showPage('home');
 await updateAccountUI();
 
-console.log('Paramytha Rocketry Division connected.');
+console.log('RPL — Rocket Propulsion Laboratories connected.');
 
 </script>
 
