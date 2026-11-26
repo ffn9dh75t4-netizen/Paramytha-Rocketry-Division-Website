@@ -47,7 +47,7 @@ max-width: 920px;
 .image-container {
 position: relative;
 width: min(100vw, 820px);
-aspect-ratio: 1640 / 2333;
+aspect-ratio: 1568 / 2354;
 container-type: inline-size;
 }
 
@@ -59,10 +59,10 @@ object-fit: cover;
 object-position: top center;
 }
 
-/* Buttons sit under the logo and above the About Us text */
+/* Buttons sit under the logo line and above the What We Do text */
 .navigation {
 position: absolute;
-top: 11.5%;
+top: 6.8%;
 left: 50%;
 transform: translateX(-50%);
 width: 94%;
@@ -116,68 +116,50 @@ background: #3a1014;
 border-color: #ff2a2a;
 }
 
-/* Wind map – sits between the image texts and the advertisement */
+/* Wind map: exactly over the dashed WIND MAP box in the image */
 .wind-section {
-width: min(92vw, 820px);
-margin: 28px auto 0;
-padding: 0 8px;
+position: absolute;
+left: 12%;
+top: 43%;
+width: 76%;
+height: 27.9%;
+z-index: 5;
 }
 
 .wind-widget {
 width: 100%;
+height: 100%;
 border: 2px solid #e11d2e;
-background: #111;
-padding: 10px;
-}
-
-.wind-widget-label {
-display: block;
-font-size: 12px;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-color: #ff2a2a;
-font-weight: bold;
-text-align: center;
-margin-bottom: 8px;
+background: #000;
 }
 
 .wind-widget iframe {
 display: block;
 width: 100%;
-aspect-ratio: 4 / 3;
+height: 100%;
 border: 0;
 background: #000;
 }
 
-.wind-widget-credit {
-display: block;
-font-size: 10px;
-color: #888;
-text-align: center;
-margin-top: 6px;
-}
-
-/* Advertisement at the very bottom */
+/* Advertisement: at the very bottom, under the image */
 .ad-section {
-width: min(92vw, 820px);
-margin: 32px auto 0;
-padding: 0 8px;
+width: min(88vw, 720px);
+margin: 10px auto 0;
 text-align: center;
 }
 
 .home-ad-label {
 display: block;
-font-size: 10px;
+font-size: min(1.5cqw, 10px);
 letter-spacing: 0.08em;
 text-transform: uppercase;
 color: #777;
 text-align: center;
-margin-bottom: 6px;
+margin-bottom: 4px;
 }
 
 .home-ad {
 display: block;
-width: 100%;
 border: 2px solid #4a6cf7;
 line-height: 0;
 }
@@ -186,6 +168,9 @@ line-height: 0;
 display: block;
 width: 100%;
 height: auto;
+max-height: 30cqw;
+object-fit: contain;
+background: #000;
 }
 
 .home-ad:hover { opacity: 0.9; }
@@ -536,8 +521,9 @@ display: none !important;
 
 <!-- Logo + About Us + What We Do image -->
 <div class="image-container">
-<img src="rpl-logo.png" alt="RPL Rocket Propulsion Laboratories">
+<img src="rpl-home.png" alt="RPL Rocket Propulsion Laboratories">
 
+<!-- Buttons: above the What We Do text -->
 <nav class="navigation">
 <button class="nav-button" onclick="showPage('donate')">Donate</button>
 <button class="nav-button" onclick="showPage('about')">About</button>
@@ -550,20 +536,19 @@ display: none !important;
 </button>
 <button class="nav-button" onclick="openFriends()">Add Friends +</button>
 </nav>
-</div>
 
-<!-- Wind map between the texts (in the image) and the advertisement -->
+<!-- Wind map: over the dashed box -->
 <div class="wind-section">
 <div class="wind-widget">
-<span class="wind-widget-label">Live Wind Map — Cyprus</span>
 <iframe
 src="https://embed.windy.com/embed2.html?lat=35.1264&lon=33.4299&detailLat=35.1264&detailLon=33.4299&width=650&height=450&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
 loading="lazy" title="Live wind map of Cyprus"></iframe>
-<span class="wind-widget-credit">Map data from windy.com</span>
 </div>
 </div>
 
-<!-- Advertisement at the bottom -->
+</div>
+
+<!-- Advertisement: very bottom of the page -->
 <div class="ad-section">
 <span class="home-ad-label">Advertisement</span>
 <a class="home-ad" href="https://fishing-website.onrender.com/"
@@ -2592,6 +2577,7 @@ alert('This person has already sent you a friend request. You can accept it.');
 }
 
 return;
+
 }
 
 for (const request of existing) {
